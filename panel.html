@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motion Tools</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app no-keys no-layers an-none" id="app">
+
+    <!-- Schede -->
+    <header class="topbar">
+    <div class="groupseg" role="tablist" aria-label="Gruppi di strumenti">
+      <button type="button" role="tab" data-gsel="anima">Anima</button>
+      <button type="button" role="tab" data-gsel="disponi">Disponi</button>
+      <button type="button" role="tab" data-gsel="progetto">Progetto</button>
+    </div>
+    <button class="ibtn tsettings" type="button" data-act="settings" aria-label="Impostazioni e aggiornamenti" data-tip="Impostazioni e aggiornamenti"><svg viewBox="0 0 16 16"><path d="M2.5 5h7M12.5 5h1M2.5 11h2M7.5 11h6"/><circle class="ring" cx="11" cy="5" r="1.5"/><circle class="ring" cx="6" cy="11" r="1.5"/></svg></button>
+    </header>
+    <nav class="tabs subtabs" role="tablist">
+      <button class="tab is-on" role="tab" data-view="curve" data-group="anima" data-tip="Curve di easing: disegna, salva e applica ai keyframe"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5C6 13.5 6.5 2.5 13.5 2.5"/><circle cx="2.5" cy="13.5" r="1.2"/><circle cx="13.5" cy="2.5" r="1.2"/></svg><span>Curve</span></button>
+      <button class="tab" role="tab" data-view="text" data-group="anima" data-tip="Animazioni del testo: preset dal vivo da scegliere e modificare"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10M8 3.5v10M6 13.5h4"/></svg><span>Testo</span></button>
+      <button class="tab tab-lib" role="tab" data-view="library" data-group="anima" data-tip="Le tue curve, quelle del progetto e i preset"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="3" height="11" rx=".6"/><rect x="6.5" y="2.5" width="3" height="11" rx=".6"/><path d="m11 3.2 2.6-.7 2 10.6-2.6.6z"/></svg><span>Libreria</span></button>
+      <button class="tab" role="tab" data-view="align" data-group="disponi" data-tip="Punto di ancoraggio, allineamento e distribuzione"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2v12"/><rect x="5" y="3.5" width="8.5" height="3" rx=".6"/><rect x="5" y="9.5" width="5" height="3" rx=".6"/></svg><span>Allinea</span></button>
+      <button class="tab" role="tab" data-view="utility" data-group="disponi" data-tip="Righello e misure tra i layer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 10.5 10.5 2.5l3 3-8 8z"/><path d="M5 8l1.2 1.2M7 6l1.2 1.2M9 4l1.2 1.2"/></svg><span>Utility</span></button>
+      <button class="tab" role="tab" data-view="repeat" data-group="disponi" data-tip="Ripeti un layer in linea, griglia o cerchio, con falloff e stagger"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="4" height="4" rx=".8"/><rect x="9.5" y="2.5" width="4" height="4" rx=".8"/><rect x="2.5" y="9.5" width="4" height="4" rx=".8"/><rect x="9.5" y="9.5" width="4" height="4" rx=".8"/></svg><span>Cloner</span></button>
+      <button class="tab" role="tab" data-view="audit" data-group="progetto" data-tip="Analisi della timeline: dove si concentrano keyframe e movimento"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5h11"/><path d="M4.5 11V8M8 11V4M11.5 11V6.5"/></svg><span>Analisi</span></button>
+      <button class="tab" role="tab" data-view="notes" data-group="progetto" data-tip="Note sulla timeline, con la firma di chi le scrive"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h9v8l-3 3h-6z"/><path d="M9.5 13.5v-3h3M6 6h4M6 8.5h2.5"/></svg><span>Note</span></button>
+      <button class="tab" role="tab" data-view="team" data-group="progetto" data-tip="Libreria condivisa con il team: palette, animazioni di testo, curve e liste"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.2"/><path d="M2 13.5c.4-2.4 2-3.6 4-3.6s3.6 1.2 4 3.6"/><circle cx="11.5" cy="6" r="1.7"/><path d="M11 9.6c1.6 0 2.7 1 3 3"/></svg><span>Team</span></button>
+    </nav>
+    <div class="updbanner" id="updBanner" role="status" hidden>
+      <div class="updtext"><strong id="updTitle"></strong><span id="updSub"></span></div>
+      <button class="btn ghost" id="updLater" type="button">Dopo</button>
+      <button class="btn primary" id="updGo" type="button">Ricarica</button>
+    </div>
+
+    <main class="body">
+
+      <!-- ============================================================ CURVE -->
+      <section class="view view-curve is-on" data-view="curve">
+        <div class="chead">
+          <div class="chead-txt">
+            <div class="chead-name"><input class="curvename" id="curveName" value="Nuova curva" aria-label="Nome della curva" spellcheck="false" data-tip="Nome della curva"><span class="kind" id="curveKind">Semplice</span></div>
+            <div class="chead-sel" id="curveSel">Nessun keyframe selezionato</div>
+          </div>
+          <button class="ibtn toggle livesw" role="switch" data-act="live" data-tip="Dal vivo: mentre modifichi la curva, i keyframe selezionati cambiano subito, senza premere Applica" aria-pressed="false"><span>Dal vivo</span><i class="switch" aria-hidden="true"></i></button>
+        </div>
+        <div class="cbar">
+          <button class="ibtn ibtn-label" data-act="read" data-tip="Leggi la curva dai keyframe selezionati"><svg viewBox="0 0 16 16"><path d="M8 2.5v7"/><path d="m5 6.5 3 3 3-3"/><path d="M3 13.5h10"/></svg><span>Leggi</span></button>
+          <button class="ibtn" data-act="copy-keys" data-tip="Copia la curva dai keyframe selezionati"><svg viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.2"/><path d="M10.5 5.5V3.7a1.2 1.2 0 0 0-1.2-1.2H3.7a1.2 1.2 0 0 0-1.2 1.2v5.6a1.2 1.2 0 0 0 1.2 1.2h1.8"/></svg></button>
+          <button class="ibtn" data-act="paste-keys" data-tip="Incolla sui keyframe selezionati la curva copiata" disabled><svg viewBox="0 0 16 16"><rect x="3.5" y="3" width="9" height="11" rx="1.2"/><path d="M6 3V2h4v1"/><path d="M5.5 12c2 0 2.5-6 5-6"/></svg></button>
+          <i class="vsep"></i>
+          <button class="ibtn" data-act="undo" data-tip="Annulla nella curva (Cmd+Z dopo un clic nel grafico)"><svg viewBox="0 0 16 16"><path d="M5.5 3.5 2.5 6.5l3 3"/><path d="M3 6.5h6.5a3.5 3.5 0 0 1 0 7H7"/></svg></button>
+          <button class="ibtn" data-act="redo" data-tip="Ripeti nella curva"><svg viewBox="0 0 16 16"><path d="m10.5 3.5 3 3-3 3"/><path d="M13 6.5H6.5a3.5 3.5 0 0 0 0 7H9"/></svg></button>
+          <span class="grow"></span>
+          <button class="ibtn toggle" data-act="snap" data-tip="Aggancia alla griglia" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M2.5 5.5h11M2.5 10.5h11M5.5 2.5v11M10.5 2.5v11"/></svg></button>
+          <button class="ibtn toggle is-on" data-act="speed" data-tip="Mostra il profilo di velocità" aria-pressed="true"><svg viewBox="0 0 16 16"><path d="M2 13.5h12"/><path d="M2.5 13c2-.5 3-8 5.5-8s3.5 7.5 5.5 8"/></svg></button>
+          <button class="ibtn" data-act="curve-more" aria-label="Altre azioni sulla curva" data-tip="Incolla da testo, maniglie automatiche, inverti, aiuto"><svg viewBox="0 0 16 16"><circle cx="4" cy="8" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="12" cy="8" r="1"/></svg></button>
+          <button class="ibtn help in-more" tabindex="-1" data-tip="Trascina punti e maniglie. Doppio clic sulla curva aggiunge un punto, doppio clic su un punto lo toglie. Alt spezza le maniglie, Shift vincola il movimento, la rotella ingrandisce in verticale."><svg viewBox="0 0 16 16"><circle class="ring" cx="8" cy="8" r="5.75"/><path d="M6.4 6.4a1.7 1.7 0 1 1 2.3 1.6c-.5.2-.7.6-.7 1.1"/><circle cx="8" cy="11.2" r=".7"/></svg></button>
+          <button class="ibtn in-more" data-act="paste-curve" data-tip="Incolla curva da testo (JSON di Motion Lab o x1, y1, x2, y2)"><svg viewBox="0 0 16 16"><path d="M6 2.5c-1.5 0-2 .7-2 2v2c0 .9-.5 1.5-1.5 1.5 1 0 1.5.6 1.5 1.5v2c0 1.3.5 2 2 2"/><path d="M10 2.5c1.5 0 2 .7 2 2v2c0 .9.5 1.5 1.5 1.5-1 0-1.5.6-1.5 1.5v2c0 1.3-.5 2-2 2"/></svg></button>
+          <button class="ibtn in-more" data-act="smooth" data-tip="Maniglie automatiche"><svg viewBox="0 0 16 16"><path d="M2 12.5c3.5 0 3.5-9 6-9s2.5 9 6 9"/></svg></button>
+          <button class="ibtn in-more" data-act="invert" data-tip="Scambia entrata e uscita"><svg viewBox="0 0 16 16"><path d="M2.5 12.5c5 0 6-9 11-9"/><path d="M11 12.5h2.5V10"/><path d="M5 3.5H2.5V6"/></svg></button>
+        </div>
+
+        <div class="graphcard">
+          <div class="graphwrap">
+            <div class="graph-host" id="graph"></div>
+            <div class="emptystate" id="emptyCurve">
+            <svg viewBox="0 0 40 16" aria-hidden="true"><path class="k" d="M4 8l4-4 4 4-4 4z"/><path class="k" d="M28 8l4-4 4 4-4 4z"/><path class="d" d="M13 8h14"/></svg>
+            <strong>Seleziona due o più keyframe</strong>
+            <span>nella timeline, sulla stessa proprietà</span>
+            <button class="link" data-act="edit-anyway">Disegna comunque</button>
+          </div>
+          </div>
+          <div class="spacing" id="spacing">
+            <button class="ibtn" data-act="play" id="playBtn" data-tip="Anteprima del movimento"><svg viewBox="0 0 16 16"><path class="fill" d="M5 3.5v9l7-4.5z"/></svg></button>
+            <svg id="spacingSvg" data-tip="Un punto per frame: dove si stringono il movimento rallenta, in arancio supera il valore finale"></svg>
+          </div>
+          <div class="spacecap">
+            <input id="durMs" type="number" min="50" max="10000" step="10" value="600" data-tip="Durata, presa dai keyframe selezionati" aria-label="Durata in millisecondi"><span class="unit">ms a</span>
+            <input id="fps" type="number" min="1" max="120" step="1" value="25" data-tip="Frame al secondo" aria-label="Frame al secondo"><span class="unit">fps,</span>
+            <span id="frameCount">16 fotogrammi</span>
+          </div>
+        </div>
+
+        <div class="secs">
+          <details class="sec" data-sec="curve" open>
+            <summary>Valori</summary>
+            <div class="sec-body">
+              <div class="inspector" id="inspector"></div>
+            </div>
+          </details>
+
+          <details class="sec" id="gens" data-sec="gen">
+            <summary>Genera</summary>
+            <div class="sec-body">
+              <div class="seg gen-tabs" role="tablist">
+                <button class="chip" data-gen="over" data-tip="Supera di poco il valore finale e torna, una volta sola">Overshoot</button>
+                <button class="chip is-on" data-gen="spring" data-tip="Supera il valore finale e oscilla fino a fermarsi">Elastico</button>
+                <button class="chip" data-gen="bounce" data-tip="Cade sul valore finale e rimbalza">Rimbalzo</button>
+                <button class="chip" data-gen="antic" data-tip="Carica all'indietro, scatta e supera di poco l'arrivo">Anticipo</button>
+              </div>
+              <div class="gen-body" id="genBody"></div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ========================================================== LIBRERIA -->
+      <aside class="view view-library" data-view="library">
+        <div class="libsearch">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.25"/><path d="m10.25 10.25 3 3"/></svg>
+          <input id="search" type="search" placeholder="Cerca in tutte le curve" aria-label="Cerca curve">
+        </div>
+        <div class="libscroll" id="libScroll">
+          <details class="libsec brand" id="secBrand" data-sec="lib-brand" open>
+            <summary>
+              <span class="dot"></span><span class="ltitle" id="brandTitle">Brand</span><span class="secn" id="cntBrand"></span>
+              <button class="ibtn" data-act="brandmenu" data-tip="Libreria, cartella condivisa, blocco"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+            </summary>
+            <p class="libsub" id="brandSub"></p>
+            <div class="liblist" id="listBrand"></div>
+          </details>
+          <details class="libsec" id="secUser" data-sec="lib-user" open>
+            <summary>
+              <span class="ltitle">Le mie curve</span><span class="secn" id="cntUser"></span>
+              <button class="ibtn" data-act="usermenu" data-tip="Esporta e importa"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+            </summary>
+            <div class="liblist" id="listUser"></div>
+          </details>
+          <details class="libsec" id="secProject" data-sec="lib-project" open>
+            <summary>
+              <span class="ltitle">Progetto</span><span class="secn" id="cntProject"></span>
+              <button class="ibtn" data-act="projectmenu" data-tip="Opzioni delle curve del progetto"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+            </summary>
+            <p class="libsub" id="projectSub"></p>
+            <div class="liblist" id="listProject"></div>
+          </details>
+          <details class="libsec" id="secPreset" data-sec="lib-preset" open>
+            <summary><span class="ltitle">Preset</span><span class="secn" id="cntPreset"></span></summary>
+            <div class="liblist" id="listPreset"></div>
+          </details>
+        </div>
+      </aside>
+
+      <!-- ============================================================ ALLINEA -->
+      <section class="view view-align" data-view="align">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="alSel">Seleziona uno o più layer</strong><span class="vsub" id="alSub">Rispetto alla composizione</span></div>
+        </div>
+        <div class="secs" id="alignWrap">
+          <details class="sec needs-layers" data-sec="align" open>
+            <summary>Allinea e distribuisci</summary>
+            <div class="sec-body">
+              <div class="seg full" id="alignTarget" role="radiogroup" aria-label="Rispetto a">
+                <button data-target="comp" class="is-on" role="radio" data-tip="Bordi e centro della composizione">Alla composizione</button>
+                <button data-target="selection" role="radio" data-tip="I layer selezionati tra loro">Alla selezione</button>
+              </div>
+              <div class="tools">
+                <button class="tbtn" data-align="left" data-tip="Allinea a sinistra"><svg viewBox="0 0 20 20"><path class="g" d="M3.5 2.5v15"/><rect x="6" y="5" width="10" height="3.5" rx=".75"/><rect x="6" y="11.5" width="6" height="3.5" rx=".75"/></svg></button>
+                <button class="tbtn" data-align="hcenter" data-tip="Centra in orizzontale"><svg viewBox="0 0 20 20"><path class="g" d="M10 2.5v15"/><rect x="4" y="5" width="12" height="3.5" rx=".75"/><rect x="6.5" y="11.5" width="7" height="3.5" rx=".75"/></svg></button>
+                <button class="tbtn" data-align="right" data-tip="Allinea a destra"><svg viewBox="0 0 20 20"><path class="g" d="M16.5 2.5v15"/><rect x="4" y="5" width="10" height="3.5" rx=".75"/><rect x="8" y="11.5" width="6" height="3.5" rx=".75"/></svg></button>
+                <i class="vsep"></i>
+                <button class="tbtn" data-align="top" data-tip="Allinea in alto"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 3.5h15"/><rect x="5" y="6" width="3.5" height="10" rx=".75"/><rect x="11.5" y="6" width="3.5" height="6" rx=".75"/></svg></button>
+                <button class="tbtn" data-align="vcenter" data-tip="Centra in verticale"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 10h15"/><rect x="5" y="4" width="3.5" height="12" rx=".75"/><rect x="11.5" y="6.5" width="3.5" height="7" rx=".75"/></svg></button>
+                <button class="tbtn" data-align="bottom" data-tip="Allinea in basso"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 16.5h15"/><rect x="5" y="4" width="3.5" height="10" rx=".75"/><rect x="11.5" y="8" width="3.5" height="6" rx=".75"/></svg></button>
+                <i class="vsep"></i>
+                <button class="tbtn" data-align="center" data-tip="Centra nella composizione"><svg viewBox="0 0 20 20"><path class="g" d="M10 2.5v15M2.5 10h15"/><rect x="7.25" y="7.25" width="5.5" height="5.5" rx=".5"/></svg></button>
+                <i class="vsep"></i>
+                <button class="tbtn" data-dist="h" data-tip="Stessa distanza orizzontale tra i centri (almeno tre layer)"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 3v14M17.5 3v14"/><rect x="5" y="6" width="2.5" height="8" rx=".6"/><rect x="8.75" y="6" width="2.5" height="8" rx=".6"/><rect x="12.5" y="6" width="2.5" height="8" rx=".6"/></svg></button>
+                <button class="tbtn" data-dist="v" data-tip="Stessa distanza verticale tra i centri (almeno tre layer)"><svg viewBox="0 0 20 20"><path class="g" d="M3 2.5h14M3 17.5h14"/><rect x="6" y="5" width="8" height="2.5" rx=".6"/><rect x="6" y="8.75" width="8" height="2.5" rx=".6"/><rect x="6" y="12.5" width="8" height="2.5" rx=".6"/></svg></button>
+              </div>
+              <label class="check" data-tip="I layer selezionati si spostano insieme, come un blocco: le distanze tra loro restano uguali. Con Selezione, ogni gruppo salvato fa da blocco"><input type="checkbox" id="alignGroup"><span>Muovi come un blocco, le distanze restano</span></label>
+              <div class="prow">
+                <span class="plabel">Gruppi</span>
+                <span class="groups" id="groupList"></span>
+                <span class="grow"></span>
+                <button class="btn sm ghost" data-act="group-new" data-tip="Salva i layer selezionati come gruppo, per riselezionarli e allinearli come un blocco">Crea gruppo</button>
+              </div>
+            </div>
+          </details>
+          <details class="sec needs-layers" data-sec="anchor" open>
+            <summary>Punto di ancoraggio</summary>
+            <div class="sec-body">
+              <div class="anchorgrid" id="anchorGrid" role="group" aria-label="Posizione del punto di ancoraggio"></div>
+            </div>
+          </details>
+          <details class="sec" data-sec="guides" open>
+            <summary>Guide</summary>
+            <div class="sec-body" id="gBody"></div>
+          </details>
+        </div>
+        <div class="emptystate" id="emptyAlign">
+          <svg viewBox="0 0 40 16" aria-hidden="true"><rect class="d" x="9" y="2" width="22" height="12" rx="1.5"/><circle class="k" cx="20" cy="8" r="2"/></svg>
+          <strong>Seleziona uno o più layer</strong>
+        </div>
+      </section>
+
+      <!-- ============================================================ UTILITY -->
+      <section class="view view-utility" data-view="utility">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="utSel">Utility</strong><span class="vsub" id="utSub">Righello, composizione, copia e incolla, liste</span></div>
+        </div>
+        <div class="secs" id="utilWrap">
+          <details class="sec" data-sec="cartelle" open>
+            <summary>Cartelle NEW e OLD</summary>
+            <div class="sec-body">
+              <div class="prow">
+                <span class="plabel">Vecchia</span>
+                <span class="pval"><input id="consOld" type="text" value="OLD" data-tip="Nome della cartella da svuotare"></span>
+              </div>
+              <div class="prow">
+                <span class="plabel">Nuova</span>
+                <span class="pval"><input id="consNew" type="text" value="NEW" data-tip="Nome della cartella dove portare gli elementi"></span>
+              </div>
+              <p class="hint">Sposta nella cartella nuova gli elementi usati dalla comp attiva, anche dentro le precomp, che si trovano nella vecchia. Non cancella niente: la vecchia la elimini tu.</p>
+              <div class="btnrow"><button class="btn" data-act="consolida">Sposta gli elementi</button></div>
+            </div>
+          </details>
+          <details class="sec needs-layers" data-sec="comp" open>
+            <summary>Composizione</summary>
+            <div class="sec-body">
+              <div class="prow">
+                <span class="plabel">Margine</span>
+                <span class="pval"><input id="fitMargin" type="number" min="0" max="2000" step="1" value="0" data-tip="Spazio in più attorno al contenuto"><span class="unit">px</span></span>
+              </div>
+              <div class="prow">
+                <span class="plabel">Keyframe</span>
+                <label class="check" data-tip="Con un layer: posizione, scala, rotazione e opacità restano sul layer della precomposizione nella composizione, il contenuto dentro resta fermo e centrato"><input type="checkbox" id="precompOuter"><span>Sul layer della precomposizione</span></label>
+              </div>
+              <div class="btnrow">
+                <button class="btn" data-act="precomp-fit" data-tip="Sposta i layer selezionati con i loro keyframe in una precomposizione grande quanto il contenuto, per tutta la durata dell'animazione. Nella composizione non si sposta nulla">Precomponi e ritaglia</button>
+                <button class="btn" data-act="comp-fit" data-tip="Ridimensiona la composizione attorno ai layer selezionati, come sono in questo frame. Tutti i layer si spostano insieme, così nulla cambia posizione rispetto al contenuto">Adatta la composizione</button>
+              </div>
+            </div>
+          </details>
+          <details class="sec needs-layers" data-sec="ruler" open>
+            <summary>Righello</summary>
+            <div class="sec-body">
+              <div class="ruler"><svg id="rulerSvg" role="img" aria-label="Schema delle distanze"></svg></div>
+              <div class="rulerdata" id="rulerData"></div>
+            </div>
+          </details>
+          <details class="sec" data-sec="copy" open>
+            <summary>Copia e incolla</summary>
+            <div class="sec-body" id="cpBody"></div>
+          </details>
+          <details class="sec" data-sec="offset" open>
+            <summary>Sposta animazione</summary>
+            <div class="sec-body" id="ofBody"></div>
+          </details>
+          <details class="sec" data-sec="stagger" open>
+            <summary>Sfalsa layer</summary>
+            <div class="sec-body" id="stBody"></div>
+          </details>
+          <details class="sec" data-sec="lists" open>
+            <summary>Liste</summary>
+            <div class="sec-body" id="liBody"></div>
+          </details>
+        </div>
+        <div class="emptystate" id="emptyUtil">
+          <svg viewBox="0 0 40 16" aria-hidden="true"><rect class="k" x="2" y="4" width="8" height="8" rx="1"/><rect class="k" x="30" y="4" width="8" height="8" rx="1"/><path class="d" d="M12 8h16"/></svg>
+          <strong>Seleziona uno o due layer</strong>
+          <span>due per lo spazio tra loro, uno per i bordi</span>
+        </div>
+      </section>
+
+      <!-- ============================================================= REPEAT -->
+      <section class="view view-repeat" data-view="repeat">
+        <!-- Nuovo Cloner: si apre quando sono selezionati dei layer -->
+        <div class="vpane" id="repCreate">
+          <div class="vhead">
+            <div class="vhead-txt"><strong class="vtitle">Nuovo Cloner</strong><span class="vsub" id="repNewSub">Dai layer selezionati</span></div>
+            <button class="btn sm ghost" data-act="rep-back" id="repBack" hidden>Torna al Cloner</button>
+          </div>
+          <div class="vwell repwell"><svg id="repPreview" class="reppreview" role="img" aria-label="Anteprima della distribuzione"></svg><span class="wellcap" id="repNewCap"></span></div>
+          <div class="secs" id="repWrap">
+            <div class="sec-body flat" id="repNewBody"></div>
+          </div>
+          <div class="vdock">
+            <span class="vhint">Poi aggiungi falloff e comportamenti</span>
+            <button class="btn primary" data-act="rep-create" data-tip="Crea il controllo e le copie dei layer selezionati">Crea Cloner</button>
+          </div>
+        </div>
+
+        <!-- Modifica: si apre quando è selezionato un Cloner o una sua copia -->
+        <div class="vpane" id="repEdit" hidden>
+          <div class="vhead">
+            <div class="vhead-txt"><strong class="vtitle" id="repName">Cloner</strong><span class="vsub" id="repMeta"></span></div>
+            <button class="btn sm ghost" data-act="rep-new" data-tip="Crea un altro Cloner dai layer selezionati">Nuovo</button>
+            <button class="btn sm" data-act="rep-recipe" data-tip="Animazioni pronte: cascata, pop casuale, onda, anello 3D">Animazioni</button>
+            <button class="ibtn" data-act="rep-refresh" aria-label="Rileggi" data-tip="Rileggi il Cloner da After Effects"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
+            <button class="ibtn" data-act="rep-menu" aria-label="Altro" data-tip="Nuovo Cloner, seleziona controllo o copie, elimina"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+          </div>
+          <div class="secs">
+            <details class="sec" data-sec="rep-dist" open>
+              <summary>Distribuzione <span class="secn" id="repDistName"></span></summary>
+              <div class="sec-body" id="repDistBody"></div>
+            </details>
+            <details class="sec" data-sec="rep-fall" open>
+              <summary>Falloff <span class="secn" id="repFallN"></span>
+                <span class="grow"></span>
+                <button class="btn sm ghost addbtn" data-act="rep-add-fall" data-tip="Aggiungi un falloff alla composizione"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg>Falloff</button>
+              </summary>
+              <div class="sec-body" id="repFallBody"></div>
+            </details>
+            <details class="sec" data-sec="rep-beh" open>
+              <summary>Comportamenti <span class="secn" id="repBehN"></span>
+                <span class="grow"></span>
+                <button class="btn sm ghost addbtn" data-act="rep-add-beh" data-tip="Aggiungi un comportamento: Stagger, Casuale, Rumore, Oscillatore, Valore o Lista"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg>Comportamento</button>
+              </summary>
+              <div class="sec-body" id="repBehBody"></div>
+            </details>
+            <details class="sec" data-sec="rep-lists">
+              <summary>Colori e testi</summary>
+              <div class="sec-body" id="repListBody"></div>
+            </details>
+            <details class="sec" data-sec="rep-tr">
+              <summary>Trasforma</summary>
+              <div class="sec-body" id="repTrBody"></div>
+            </details>
+            <details class="sec" data-sec="rep-src">
+              <summary>Input <span class="secn" id="repSrcN"></span></summary>
+              <div class="sec-body" id="repSrcBody"></div>
+            </details>
+          </div>
+        </div>
+        <div class="emptystate" id="emptyRepeat">
+          <svg viewBox="0 0 40 16" aria-hidden="true"><rect class="k" x="3" y="4" width="8" height="8" rx="1"/><rect class="k o2" x="16" y="4" width="8" height="8" rx="1"/><rect class="k o3" x="29" y="4" width="8" height="8" rx="1"/></svg>
+          <strong>Seleziona i layer da ripetere</strong>
+          <span>o il controllo di un Cloner per modificarlo</span>
+        </div>
+      </section>
+
+      <!-- =========================================================== ANALISI -->
+      <section class="view view-audit" data-view="audit">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="anComp">Analisi della timeline</strong><span class="vsub" id="anMeta"></span></div>
+          <button class="ibtn" data-act="analyze" aria-label="Aggiorna" data-tip="Rianalizza la composizione attiva"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
+        </div>
+        <div class="vwell chart" id="anChart"><svg id="anSvg" role="img" aria-label="Keyframe e movimento nel tempo. Clic per spostare l’indicatore del tempo" data-tip="Clic per spostare l’indicatore del tempo"></svg><div class="chart-tip" id="anTip" hidden></div>
+          <div class="legend2 welllegend"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span></div>
+        </div>
+        <div class="secs" id="anWrap">
+          <details class="sec" data-sec="an-stats" open>
+            <summary>Panoramica</summary>
+            <div class="sec-body"><div class="stats" id="anStats"></div></div>
+          </details>
+          <details class="sec" data-sec="an-peaks" open>
+            <summary>Momenti più intensi</summary>
+            <div class="sec-body"><div class="list" id="anPeaks"></div></div>
+          </details>
+          <details class="sec" data-sec="an-layers" open>
+            <summary>Layer più animati</summary>
+            <div class="sec-body"><div class="list" id="anLayers"></div></div>
+          </details>
+          <details class="sec" data-sec="an-ease" open>
+            <summary>Easing</summary>
+            <div class="sec-body">
+              <div id="anEase"></div>
+              <div class="btnrow"><button class="btn" data-act="select-linear" data-tip="Seleziona nella timeline i keyframe lineari, per sistemarli con una curva">Seleziona i lineari</button></div>
+            </div>
+          </details>
+        </div>
+        <div class="emptystate" id="emptyAn">
+          <svg viewBox="0 0 40 16" aria-hidden="true"><path class="d" d="M2 14h36"/><rect class="k" x="5" y="9" width="3" height="5"/><rect class="k" x="11" y="5" width="3" height="9"/><rect class="k o2" x="17" y="7" width="3" height="7"/><rect class="k" x="23" y="2" width="3" height="12"/><rect class="k o3" x="29" y="10" width="3" height="4"/></svg>
+          <strong>Apri una composizione</strong>
+          <span>e premi Aggiorna per analizzarla</span>
+        </div>
+      </section>
+      <!-- ============================================================= TESTO -->
+      <section class="view view-text" data-view="text">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="txSel">Seleziona un layer di testo</strong><span class="vsub" id="txSub">Poi scegli un’animazione e premi Applica</span></div>
+          <button class="ibtn" data-act="tx-more" aria-label="Altro" data-tip="Leggi dal layer, importa da file, togli l’animazione"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+        </div>
+        <div class="vwell txwell">
+          <div class="txstage" id="txStage"></div>
+          <p class="wellempty" id="txStageEmpty">Scegli un’animazione per vederla qui</p>
+          <button class="ibtn sm txreplay" data-act="tx-replay" aria-label="Riparti da capo" data-tip="Riparti da capo"><svg viewBox="0 0 16 16"><path d="M3.5 8a4.5 4.5 0 1 0 1.4-3.3M3.5 2.5v2.6h2.6"/></svg></button>
+        </div>
+        <div class="secs" id="txWrap">
+          <details class="sec" data-sec="tx-gal" open>
+            <summary>Animazioni</summary>
+            <div class="sec-body">
+              <div class="seg txtabs" id="txTabs" role="radiogroup" aria-label="Quali animazioni"></div>
+              <div class="txlist" id="txGal"></div>
+            </div>
+          </details>
+          <details class="sec" data-sec="tx-edit" open>
+            <summary>Modifica <span class="faint" id="txEditName"></span></summary>
+            <div class="sec-body" id="txEdit"><p class="hint">Scegli un’animazione qui sopra per modificarla.</p></div>
+          </details>
+        </div>
+        <div class="vdock">
+          <span class="grow"></span>
+          <button class="btn" data-act="tx-save" data-tip="Salva nei miei preset l’animazione aperta, o quella del layer selezionato">Salva come preset</button>
+          <button class="btn primary" data-act="tx-apply" data-tip="Applica l’animazione ai layer di testo selezionati">Applica</button>
+        </div>
+      </section>
+
+      <!-- ============================================================== NOTE -->
+      <section class="view view-notes" data-view="notes">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="ntComp">Note</strong><span class="vsub" id="ntSub">Apri una composizione</span></div>
+          <button class="ibtn" data-act="analyze" aria-label="Rileggi il ritmo" data-tip="Rileggi keyframe e movimento della comp aperta"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
+        </div>
+        <div class="vwell chart ntchart">
+          <svg id="ntSvg" role="img" aria-label="Ritmo della composizione con marcatori collegati e note"></svg>
+          <p class="ntempty">Premi il pulsante in alto per leggere il ritmo della comp.</p>
+          <div class="legend2 welllegend"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span><span><i class="ln"></i>Note</span></div>
+        </div>
+        <div class="secs" id="ntWrap">
+          <details class="sec" data-sec="nt-new" open>
+            <summary>Nuova nota</summary>
+            <div class="sec-body" id="ntNew"></div>
+          </details>
+          <details class="sec" data-sec="nt-list" open>
+            <summary>Note <span class="secn" id="ntCount"></span></summary>
+            <div class="sec-body" id="ntList"></div>
+          </details>
+          <details class="sec" data-sec="nt-sync" open>
+            <summary>Marcatori collegati <span class="secn" id="ntSyncN"></span></summary>
+            <div class="sec-body">
+              <div id="ntSync"></div>
+              <label class="check" data-tip="Spento di default: con l’opzione accesa, le comp nuove dentro la principale ricevono i marcatori da sole. Con molte comp può rallentare After Effects, quindi conviene tenerla spenta e usare Riallinea quando serve."><input type="checkbox" id="syncAutoOn"><span>Anche nelle comp nuove</span></label>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============================================================== TEAM -->
+      <section class="view view-team" data-view="team">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="tmName">Team</strong><span class="vsub" id="tmFolder"></span></div>
+          <button class="btn sm" data-act="tm-folder" data-tip="Scegli la cartella condivisa (Drive, Dropbox, server) dove il team tiene la libreria">Cartella…</button>
+          <button class="ibtn" data-act="tm-menu" aria-label="Altro" data-tip="Altre azioni"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+        </div>
+        <div class="secs" id="tmWrap">
+          <details class="sec" data-sec="tm-colors" open><summary>Palette <span class="secn" id="tmNColors"></span></summary><div class="sec-body" id="tmColors"></div></details>
+          <details class="sec" data-sec="tm-text" open><summary>Animazioni di testo <span class="secn" id="tmNText"></span></summary><div class="sec-body" id="tmText"></div></details>
+          <details class="sec" data-sec="tm-curves" open><summary>Curve <span class="secn" id="tmNCurves"></span></summary><div class="sec-body" id="tmCurves"></div></details>
+          <details class="sec" data-sec="tm-lists" open><summary>Liste <span class="secn" id="tmNLists"></span></summary><div class="sec-body" id="tmLists"></div></details>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============================================== AZIONI SUI KEYFRAME -->
+    <footer class="foot">
+      <div class="prow speedbar is-disabled" id="speedbar">
+        <span class="plabel" data-tip="Tutto a sinistra: velocità costante (curva lineare). Al centro: l'easing di partenza. Tutto a destra: centro più rapido possibile. I keyframe non si spostano e non se ne creano">Velocità</span>
+        <div class="speedtrack">
+          <span class="speedzero"></span>
+          <span class="speedfill" id="speedFill"></span>
+          <input id="speed" type="range" min="-100" max="100" step="5" value="0" disabled>
+        </div>
+        <output id="speedOut" class="speedout">0%</output>
+        <button class="ibtn sm speedreset" data-act="speed-reset" data-tip="Torna all'easing di partenza"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.5-3.5"/><path d="M3 2.5v3h3"/></svg></button>
+      </div>
+      <p class="speednote" id="speedNote"></p>
+      <div class="applyrow">
+        <div class="seg" id="modeSeg" role="radiogroup" aria-label="Lato dell'easing">
+          <button data-mode="in" role="radio" data-tip="Solo l'arrivo sul keyframe">Entrata</button>
+          <button data-mode="both" role="radio" class="is-on" data-tip="Partenza e arrivo">Entrambi</button>
+          <button data-mode="out" role="radio" data-tip="Solo la partenza dal keyframe">Uscita</button>
+        </div>
+        <span class="grow"></span>
+        <div class="savebtns">
+          <button class="btn" data-act="save-user" data-tip="Salva nelle mie curve">Salva</button>
+
+        </div>
+        <button class="btn primary" data-act="apply" data-tip="Applica ai keyframe selezionati (Invio)">Applica</button>
+      </div>
+    </footer>
+
+    <!-- Barra di stato, come il pannello Info -->
+    <div class="status" id="status">
+      <span class="selinfo" id="selinfo">Nessun keyframe selezionato</span>
+      <span class="toast" id="toast" role="status" aria-live="polite"></span>
+    </div>
+
+    <div class="tip" id="tip" role="tooltip" hidden></div>
+    <div class="menu" id="menu" role="menu" hidden></div>
+    <div class="modal" id="modal" hidden></div>
+  </div>
+
+  <script src="js/build.js"></script>
+  <script src="js/CSInterface.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/update.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

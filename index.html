@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motion Tools</title>
+  <style>html, body { background: #232323; margin: 0; }</style>
+</head>
+<body>
+  <!--
+    Caricatore. Questo file non cambia tra le versioni: legge panel.html, gli stili e gli script
+    sempre dal disco, con un parametro diverso a ogni apertura (?t=...), cosi' Chromium dentro CEP
+    non puo' usare copie vecchie tenute in memoria. Dopo un aggiornamento basta ricaricare il pannello.
+  -->
+  <script>
+  (function () {
+    var t = String(Date.now());
+    var base = location.href.replace(/[?#].*$/, '').replace(/[^\/]*$/, '');
+    function readText(rel) {
+      try {
+        var x = new XMLHttpRequest();
+        x.open('GET', base + rel + '?t=' + t, false);
+        x.send(null);
+        if (x.responseText) return x.responseText;
+      } catch (e) {}
+      try {
+        var p = decodeURIComponent(base.replace(/^file:\/\//, ''));
+        if (/^\/[A-Za-z]:\//.test(p)) p = p.substring(1);
+        return require('fs').readFileSync(p + rel, 'utf8');
+      } catch (e2) {}
+      return '';
+    }
+    var html = readText('panel.html');
+    if (!html) { document.body.innerHTML = '<p style="color:#ddd;font:13px sans-serif;padding:12px">Non riesco a leggere panel.html. Reinstalla Motion Tools dallo zip.</p>'; return; }
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var links = doc.querySelectorAll('head link[rel="stylesheet"]');
+    for (var i = 0; i < links.length; i++) {
+      var l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = links[i].getAttribute('href') + '?t=' + t;
+      document.head.appendChild(l);
+    }
+    var scripts = [], ss = doc.body.querySelectorAll('script[src]');
+    for (var j = 0; j < ss.length; j++) { scripts.push(ss[j].getAttribute('src')); ss[j].parentNode.removeChild(ss[j]); }
+    document.body.className = doc.body.className;
+    document.body.innerHTML = doc.body.innerHTML;
+    window.MT_LOADER = 1;
+    // In ordine, uno dopo l'altro: app.js usa quello che definiscono i precedenti.
+    (function next(k) {
+      if (k >= scripts.length) return;
+      var s = document.createElement('script');
+      s.src = scripts[k] + '?t=' + t;
+      s.onload = s.onerror = function () { next(k + 1); };
+      document.body.appendChild(s);
+    })(0);
+  })();
+  </script>
+</body>
+</html>
