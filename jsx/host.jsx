@@ -1,4 +1,4 @@
-var MT_BUILD = "2.35.0-ab04ffe1";
+var MT_BUILD = "2.36.0-e7beafbe";
 function inflect_build() { return MT_BUILD; }
 /*
  * Curve \u00b7 host.jsx
@@ -1482,6 +1482,9 @@ function inflect_state(view) {
             o.comp = comp.name;
             o.fps = 1 / comp.frameDuration;
             o.layers = comp.selectedLayers.length;
+            // I nomi dei primi layer selezionati, per le intestazioni del pannello ("Da Logo e Pallino").
+            o.selNames = [];
+            for (var sn = 0; sn < comp.selectedLayers.length && sn < 3; sn++) o.selNames.push(comp.selectedLayers[sn].name);
             var list = inflect_selectedKeyedProps(comp);
             o.props = list.length;
             for (var i = 0; i < list.length; i++) {

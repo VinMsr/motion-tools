@@ -594,6 +594,7 @@
   /* ============================================================ libreria == */
 
   const LIB_LABEL = { brand: 'brand', project: 'progetto', user: 'mie curve' };
+  const fmtN = (v) => (+v).toFixed(2).replace('.', ',');
   function libFor(name) { return name === 'brand' ? S.brand : name === 'project' ? S.project : name === 'user' ? S.user : { curves: S.presets }; }
 
   function matches(c) {
@@ -619,6 +620,8 @@
     $('#projectSub').textContent = S.projectName || '';
     $('#projectSub').dataset.tip = 'Curve salvate dentro il file di progetto: viaggiano con il .aep';
 
+    const cnt = (id, n) => { const el = $(id); if (el) el.textContent = n ? String(n) : ''; };
+    cnt('#cntBrand', S.brand.curves.length); cnt('#cntUser', S.user.curves.length); cnt('#cntProject', S.project.curves.length); cnt('#cntPreset', S.presets.length);
     renderList($('#listBrand'), 'brand', S.brand.curves,
       `Vuota. <button data-act="save-brand">Aggiungi la curva attuale</button> per condividerla con il team.`);
     renderList($('#listProject'), 'project', S.project.curves,
@@ -646,13 +649,15 @@
       it.className = 'item' + (S.source && S.source.lib === lib && S.source.id === c.id ? ' is-active' : '');
       it.tabIndex = 0;
       it.title = (c.notes ? c.notes + '\n' : '') + 'Clic per modificare, doppio clic per applicare';
-      it.appendChild(thumb(c, 34, 22));
+      const active = S.source && S.source.lib === lib && S.source.id === c.id;
+      it.appendChild(thumb(c, 32, 20));
       const txt = document.createElement('div');
-      txt.style.minWidth = '0';
+      txt.className = 'itxt';
       const cb = C.toCubic(c);
-      txt.innerHTML = `<div class="nm"></div><div class="meta"></div>`;
+      txt.innerHTML = `<span class="nm"></span><span class="meta"></span>`;
       txt.querySelector('.nm').textContent = c.name;
-      txt.querySelector('.meta').textContent = c.notes || (cb ? cb.join(', ') : `${c.points.length} punti`);
+      const meta = txt.querySelector('.meta');
+      if (cb) cb.forEach((v) => { const x = document.createElement('i'); x.textContent = fmtN(v); meta.appendChild(x); }); else meta.textContent = `${c.points.length} punti`;
       it.appendChild(txt);
       if (lib !== 'preset') {
         const more = document.createElement('button');
@@ -664,7 +669,20 @@
       } else {
         it.appendChild(document.createElement('span'));
       }
-      it.addEventListener('click', () => { setCurve(c, { lib, id: c.id }); if (isNarrow()) showView('curve'); });
+      if (active) {
+        // La curva aperta si allarga: grafico grande, poi Apri in Curve e Applica.
+        it.classList.add('is-open');
+        const big = document.createElement('div');
+        big.className = 'itembig';
+        big.appendChild(thumb(c, 300, 56));
+        const acts = document.createElement('div');
+        acts.className = 'itemacts';
+        acts.innerHTML = '<span class="faint">Doppio clic o <span class="kc">↵</span> applica</span><span class="grow"></span><button class="btn sm" data-lib-open>Apri in Curve</button><button class="btn sm primary" data-lib-apply>Applica</button>';
+        acts.querySelector('[data-lib-open]').addEventListener('click', (e) => { e.stopPropagation(); showView('curve'); });
+        acts.querySelector('[data-lib-apply]').addEventListener('click', (e) => { e.stopPropagation(); apply(); });
+        it.append(big, acts);
+      }
+      it.addEventListener('click', () => { if (active) return; setCurve(c, { lib, id: c.id }); });
       it.addEventListener('dblclick', () => { setCurve(c, { lib, id: c.id }); apply(); });
       it.addEventListener('keydown', (e) => { if (e.key === 'Enter') { setCurve(c, { lib, id: c.id }); apply(); } });
       it.addEventListener('contextmenu', (e) => { e.preventDefault(); if (lib !== 'preset') itemMenu(it, lib, c, e); });
@@ -1289,7 +1307,7 @@
   function renderAnalysis() {
     const r = AN, T = r.totals;
     $('#anComp').textContent = r.comp;
-    $('#anMeta').textContent = `${C.round(r.duration, 2)} s a ${Math.round(r.fps)} fps`;
+    $('#anMeta').textContent = `${C.round(r.duration, 2)} s a ${Math.round(r.fps)} fps, ${T.keys} keyframe su ${T.animated} ${T.animated === 1 ? 'layer' : 'layer'}`;
     drawChart();
 
     const per = r.duration > 0 ? T.keys / r.duration : 0;
@@ -1358,6 +1376,7 @@
     const tools = ['align', 'utility', 'repeat', 'audit', 'text', 'team', 'notes'].includes(name);
     $('#app').classList.toggle('tools-view', tools);
     $('#app').classList.toggle('audit-view', name === 'audit');
+    $('#app').classList.toggle('lib-view', name === 'library');
     $$('.tab').forEach((t) => t.classList.toggle('is-on', t.dataset.view === name));
     const onTab = $(`.tab[data-view="${name}"]`);
     if (onTab) requestAnimationFrame(() => { try { onTab.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {} });
@@ -1474,7 +1493,7 @@
       case 'precomp-fit': utilComp('inflect_precomposeFit'); break;
       case 'comp-fit': utilComp('inflect_fitComp'); break;
       case 'edit-anyway': $('#app').classList.add('edit-anyway'); editor.render(); drawSpacing(); break;
-      case 'rep-create': case 'rep-new': case 'rep-add-beh': case 'rep-add-fall': case 'rep-menu': case 'rep-recipe':
+      case 'rep-create': case 'rep-new': case 'rep-back': case 'rep-add-beh': case 'rep-add-fall': case 'rep-menu': case 'rep-recipe':
         e.preventDefault(); repeatAct(act, b); break;
       case 'speed-step': setSpeed(C.clamp(speedValue() + parseFloat(b.dataset.step), -60, 60)); break;
       case 'analyze': analyze(); break;
@@ -1595,6 +1614,20 @@
   function applyState(st) {
     S.ae = st;
     const app = $('#app');
+    const cv = currentView();
+    if (cv === 'notes') { try { ntHead(); } catch (e) {} }
+    if (cv === 'align' || cv === 'utility') {
+      const n = st.layers || 0, names = st.selNames || [];
+      const who = !n ? '' : n === 1 ? (names[0] || '1 layer') : n === 2 && names.length === 2 ? `${names[0]} e ${names[1]}` : `${n} layer selezionati`;
+      if (cv === 'align') {
+        $('#alSel').textContent = n ? who : 'Seleziona uno o più layer';
+        $('#alSub').textContent = alignTarget === 'comp' ? `Rispetto alla composizione${st.comp ? ` ${st.comp}` : ''}` : 'Rispetto ai layer selezionati';
+      } else {
+        $('#utSel').textContent = n ? who : 'Utility';
+        $('#utSub').textContent = n === 2 ? 'Misure tra i due layer, composizione, copia e incolla' : n === 1 ? 'Misure dai bordi, composizione, copia e incolla' : 'Seleziona uno o due layer per le misure';
+      }
+    }
+    if (cv === 'repeat' && !$('#repCreate').hidden) { try { $('#repNewSub').textContent = selLabel(); drawNewPreview(); } catch (e) {} }
     const hasKeys = st.props > 0;
     if (hasKeys) app.classList.remove('edit-anyway');
     app.classList.toggle('no-keys', !hasKeys);
@@ -1747,7 +1780,8 @@
   let alignTarget = 'comp';
   $$('#alignTarget button').forEach((b) => b.addEventListener('click', () => {
     alignTarget = b.dataset.target;
-    $$('#alignTarget button').forEach((x) => x.classList.toggle('is-on', x === b));
+    $$('#alignTarget button').forEach((x) => { x.classList.toggle('is-on', x === b); x.setAttribute('aria-checked', x === b ? 'true' : 'false'); });
+    if (S.ae) applyState(S.ae);
   }));
   $$('[data-align]').forEach((b) => b.addEventListener('click', async () => {
     const edge = b.dataset.align;
@@ -2122,35 +2156,67 @@
   if (!N.place) N.place = 'comp';
   const saveN = () => { try { localStorage.setItem('mt.newrepeat', JSON.stringify(N)); } catch (e) {} };
 
+  // Segni delle distribuzioni, come nel disegno: punti su una griglia di 24.
+  const DIST_GLYPH = (() => {
+    const pts = {
+      1: [[3, 12], [9, 12], [15, 12], [21, 12]],
+      2: [[4, 7], [12, 7], [20, 7], [4, 15], [12, 15], [20, 15]],
+      3: [0, 1, 2, 3, 4, 5].map((a) => [12 + 8 * Math.cos(a * Math.PI / 3), 12 + 8 * Math.sin(a * Math.PI / 3)]),
+      4: [[5, 6], [15, 4], [20, 13], [8, 16], [14, 20], [3, 20]],
+      5: [1.5, 3.5, 5.5, 7.5, 9.5].map((r) => [12 + r * Math.cos(r * 0.9), 12 + r * Math.sin(r * 0.9)]),
+      6: [[3, 18], [8, 10], [13, 8], [18, 11], [21, 18]],
+      7: [[12, 12], [10, 10], [14, 11], [11, 14], [13, 13]],
+    };
+    const out = {};
+    Object.keys(pts).forEach((k) => {
+      const extra = +k === 6 ? '<path d="M3 18C6 8 17 4 21 18" fill="none" stroke="currentColor" stroke-width="1" opacity=".35"/>' : '';
+      out[k] = `<svg viewBox="0 0 24 24" aria-hidden="true">${extra}${pts[k].map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.6" fill="currentColor"/>`).join('')}</svg>`;
+    });
+    return out;
+  })();
+  function distTiles(cur, onPick) {
+    const g = h('div', { class: 'disttiles', role: 'radiogroup', 'aria-label': 'Distribuzione' });
+    LISTS.dist.forEach((name, i) => {
+      const b = h('button', { role: 'radio', 'aria-checked': cur === i + 1 ? 'true' : 'false', class: cur === i + 1 ? 'is-on' : '' });
+      b.innerHTML = DIST_GLYPH[i + 1];
+      b.append(h('span', { text: name }));
+      b.addEventListener('click', () => onPick(i + 1));
+      g.append(b);
+    });
+    return g;
+  }
+  function selLabel() {
+    const n = (S.ae && S.ae.layers) || 0, names = (S.ae && S.ae.selNames) || [];
+    if (!n) return 'Seleziona i layer da ripetere';
+    if (n === 1 && names[0]) return `Da ${names[0]}, il layer selezionato`;
+    if (n === 2 && names.length === 2) return `Da ${names[0]} e ${names[1]}, i layer selezionati`;
+    return `Da ${n} layer selezionati`;
+  }
+
   function renderRepeatNew() {
     const box = $('#repNewBody');
     if (isTyping(box) || scrubbing) return;
     box.textContent = '';
     const upd = () => { saveN(); drawNewPreview(); };
     const nsel = (S.ae && S.ae.layers) || 0;
-    const fields = h('div', { class: 'cols' },
-      row('Distribuzione', select(LISTS.dist, N.mode, (v) => { N.mode = +v; saveN(); renderRepeatNew(); })),
+    $('#repNewSub').textContent = selLabel();
+    const back = $('#repBack');
+    back.hidden = !(repForceNew && S.ae && S.ae.repeat);
+    if (!back.hidden) back.textContent = `Torna a ${S.ae.repeat.name}`;
+    add(box, distTiles(N.mode, (v) => { N.mode = v; saveN(); renderRepeatNew(); }));
+    const two = (...r) => h('div', { class: 'pgrid2' }, ...r.filter(Boolean));
+    add(box,
       N.mode === 2
-        ? [row('Colonne', hot(N.cols, (v) => { N.cols = Math.max(1, Math.round(v)); upd(); }, { min: 1 })),
-           row('Righe', hot(N.rows, (v) => { N.rows = Math.max(1, Math.round(v)); upd(); }, { min: 1 })),
-           N.threeD ? row('Livelli', hot(N.levels, (v) => { N.levels = Math.max(1, Math.round(v)); upd(); }, { min: 1, tip: 'Strati in profondità' })) : null]
+        ? two(row('Colonne', hot(N.cols, (v) => { N.cols = Math.max(1, Math.round(v)); upd(); }, { min: 1 })),
+              row('Righe', hot(N.rows, (v) => { N.rows = Math.max(1, Math.round(v)); upd(); }, { min: 1 })),
+              N.threeD ? row('Livelli', hot(N.levels, (v) => { N.levels = Math.max(1, Math.round(v)); upd(); }, { min: 1, tip: 'Strati in profondità' })) : null)
         : row('Quantità', hot(N.count, (v) => { N.count = Math.max(1, Math.round(v)); upd(); }, { min: 1 })),
-      row('3D', check('Copie in 3D', N.threeD, (v) => { N.threeD = !!v; saveN(); renderRepeatNew(); }, 'Controllo e copie diventano layer 3D')),
-      nsel > 1 ? row('Sorgenti', segc([['cycle', 'Alternate', 'Le copie usano i layer selezionati a turno'], ['random', 'Casuali', 'Ogni copia sceglie uno dei layer a caso']], N.pick, (v) => { N.pick = v; saveN(); })) : null,
-      row('In primo piano', segc([['last', 'Ultima', 'L’ultima copia sta sopra le altre'], ['first', 'Prima', 'La prima copia sta sopra le altre']], N.front, (v) => { N.front = v; saveN(); })),
-      row('Posizione', segc([['comp', 'Centro composizione', 'Il Cloner nasce al centro della composizione'], ['layer', 'Sul layer', 'Il Cloner nasce dove si trova il primo layer selezionato']], N.place, (v) => { N.place = v; saveN(); })),
-      row('Originale', check('Nascondi', N.hide, (v) => { N.hide = !!v; saveN(); }, 'Spegne i layer di partenza')),
+      nsel > 1 ? row('Sorgenti', segc([['cycle', 'Alternate', 'Le copie usano i layer selezionati a turno'], ['random', 'Casuali', 'Ogni copia sceglie uno dei layer a caso']], N.pick, (v) => { N.pick = v; saveN(); drawNewPreview(); })) : null,
+      row('Posizione', segc([['comp', 'Centro della comp', 'Il Cloner nasce al centro della composizione'], ['layer', 'Primo layer', 'Il Cloner nasce dove si trova il primo layer selezionato']], N.place, (v) => { N.place = v; saveN(); })),
+      row('Davanti', segc([['last', 'Ultima copia', 'L’ultima copia sta sopra le altre'], ['first', 'Prima', 'La prima copia sta sopra le altre']], N.front, (v) => { N.front = v; saveN(); })),
+      row('', check('Copie in 3D', N.threeD, (v) => { N.threeD = !!v; saveN(); renderRepeatNew(); }, 'Controllo e copie diventano layer 3D')),
+      row('', check('Nascondi i layer di partenza', N.hide, (v) => { N.hide = !!v; saveN(); }, 'Spegne i layer di partenza')),
     );
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.id = 'repPreview';
-    svg.setAttribute('class', 'reppreview');
-    add(box, h('div', { class: 'repnew' }, svg, fields));
-    if (nsel > 1) add(box, h('p', { class: 'hint', text: `${nsel} layer selezionati: verranno usati come sorgenti.` }));
-    if (repForceNew && S.ae && S.ae.repeat) {
-      const back = h('button', { class: 'btn ghost', text: `Torna a ${S.ae.repeat.name}` });
-      back.addEventListener('click', () => { repForceNew = false; repShown = null; renderRepeatState(S.ae.repeat); });
-      add(box, h('div', { class: 'btnrow' }, back));
-    }
     drawNewPreview();
   }
 
@@ -2175,15 +2241,25 @@
   function drawNewPreview() {
     const svg = $('#repPreview');
     if (!svg) return;
-    const W = 112, H = 84, pad = 12;
+    const W = Math.max(200, Math.round(svg.getBoundingClientRect().width) || 316), H = 168, pad = 24, padB = 36;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const pts = newPoints().map((p) => [p[0] + p[2] * 0.45, p[1] - p[2] * 0.3]);
     let l = Infinity, r = -Infinity, t = Infinity, b = -Infinity;
     pts.forEach((p) => { l = Math.min(l, p[0]); r = Math.max(r, p[0]); t = Math.min(t, p[1]); b = Math.max(b, p[1]); });
-    const k = Math.min((W - pad * 2) / Math.max(0.001, r - l), (H - pad * 2) / Math.max(0.001, b - t), 18);
-    const cx = (l + r) / 2, cy = (t + b) / 2;
-    const rad = pts.length > 120 ? 1.2 : pts.length > 40 ? 1.7 : 2.4;
-    svg.innerHTML = pts.map((p, i) => `<circle${i === 0 ? ' class="first"' : ''} cx="${(W / 2 + (p[0] - cx) * k).toFixed(1)}" cy="${(H / 2 + (p[1] - cy) * k).toFixed(1)}" r="${rad}"/>`).join('');
+    const k = Math.min((W - pad * 2) / Math.max(0.001, r - l), (H - pad - padB) / Math.max(0.001, b - t), 60);
+    const cx = (l + r) / 2, cy = (t + b) / 2 + (padB - pad) / 2 / Math.max(k, 0.001);
+    const n = pts.length, sz = n > 160 ? 3 : n > 60 ? 5 : n > 24 ? 8 : 12;
+    const srcs = Math.max(1, Math.min(3, (S.ae && S.ae.layers) || 1));
+    const rnd = (i) => { const x = Math.sin(i * 91.17) * 43758.5; return x - Math.floor(x); };
+    svg.innerHTML = pts.map((p, i) => {
+      const x = (W / 2 + (p[0] - cx) * k), y = (H / 2 + (p[1] - cy) * k);
+      const s = srcs > 1 ? (N.pick === 'random' ? Math.floor(rnd(i) * srcs) : i % srcs) : 0;
+      return s === 1 ? `<circle class="s1" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${sz / 2}"/>`
+        : `<rect class="s${s}" x="${(x - sz / 2).toFixed(1)}" y="${(y - sz / 2).toFixed(1)}" width="${sz}" height="${sz}" rx="${Math.max(1, sz / 4)}"/>`;
+    }).join('');
+    const tot = N.mode === 2 ? N.cols * N.rows * (N.threeD ? N.levels : 1) : N.count;
+    const cap = $('#repNewCap');
+    if (cap) cap.textContent = `${tot} ${tot === 1 ? 'copia' : 'copie'}${srcs > 1 ? ` da ${(S.ae && S.ae.layers) || srcs} layer` : ''}`;
   }
 
   async function repeatCreate() {
@@ -2313,7 +2389,13 @@
     const p = RP.params, m = Math.round(p['Distribuzione']);
     const td = RP.threeD;
     $('#repName').textContent = RP.name;
-    $('#repMeta').textContent = `${RP.clones} copie · ${LISTS.dist[m - 1] || ''}`;
+    const DN = ['in linea', 'in griglia', 'in cerchio', 'sparse', 'a spirale', 'su tracciato', 'su un punto'];
+    $('#repMeta').textContent = `${RP.clones} ${RP.clones === 1 ? 'copia' : 'copie'} ${DN[m - 1] || ''}, ${td ? '3D' : '2D'}`;
+    $('#repDistName').textContent = LISTS.dist[m - 1] || '';
+    const setN = (id, n) => { const el = $(id); if (el) el.textContent = n ? String(n) : ''; };
+    setN('#repFallN', (RP.falloffs || []).length);
+    setN('#repBehN', (RP.behaviours || []).filter((b) => !isFallLink(b)).length);
+    setN('#repSrcN', ((RP.inputs || RP.sources || []).length));
 
     /* Distribuzione */
     const dist = $('#repDistBody');
@@ -2322,7 +2404,7 @@
     const st = p['Passo'] || [0, 0, 0];
     const setVec = (name, cur) => (vals) => P(name)(td ? vals : [vals[0], vals[1], (cur || [0, 0, 0])[2] || 0]);
     add(dist,
-      krow(null, 'Tipo', select(LISTS.dist, m, (v) => P('Distribuzione')(+v))),
+      distTiles(m, (v) => P('Distribuzione')(+v)),
       krow(null, 'Spazio', segc([[0, '2D'], [1, '3D', 'Controllo, copie e falloff collegati diventano 3D']], td ? 1 : 0, (v) => setParam('inflect_repeatSet', 'threeD', +v).then(() => readRepeat(true)))),
     );
     if (m === 2) {
@@ -2777,6 +2859,7 @@
       case 'rep-menu': return repeatMenu(el);
       case 'rep-recipe': return recipeMenu(el);
       case 'rep-refresh': repDataKey = ''; return readRepeat(true);
+      case 'rep-back': repForceNew = false; repShown = null; return renderRepeatState(S.ae ? S.ae.repeat : null);
       case 'rep-new': {
         repForceNew = true; repShown = null;
         // Se era rimasto fissato un Cloner (scelta degli input), lo si libera.
@@ -3064,8 +3147,10 @@
     if (!$('#tmColors')) return;
     const T = TEAM || teamNorm({});
     $('#tmName').textContent = T.name || 'Team';
-    $('#tmFolder').textContent = (teamInfo ? (teamInfo.isDefault ? 'Solo su questo computer: scegli una cartella condivisa' : `Cartella ${teamInfo.folderName}`) : '') + (UPD ? ` \u00b7 versione ${UPD.current}${UPD.available ? `, la ${UPD.version} \u00e8 pronta` : ''}` : '');
+    $('#tmFolder').textContent = teamInfo ? (teamInfo.isDefault ? 'Solo su questo computer, scegli una cartella condivisa' : `Cartella ${teamInfo.folderName}`) : 'Libreria condivisa con il team';
     $('#tmFolder').dataset.tip = teamInfo ? teamInfo.folder : '';
+    const tn = (id, n) => { const el = $(id); if (el) el.textContent = n ? String(n) : ''; };
+    tn('#tmNColors', (T.palettes || []).length); tn('#tmNText', (T.text || []).length); tn('#tmNCurves', (T.curves || []).length); tn('#tmNLists', (T.lists || []).length);
 
     const pc = $('#tmColors');
     pc.textContent = '';
@@ -3597,7 +3682,7 @@
         { label: 'Elimina', danger: true, run: () => src === 'team' ? mutateTeam((T) => { T.text = T.text.filter((x) => x.id !== P.id); }) : txSaveUser((L) => L.filter((x) => x.id !== P.id)) },
       ].filter(Boolean), e);
     });
-    const text = txSampleText().split(/\r|\n/)[0].slice(0, 10);
+    const text = TX_SAMPLE;
     requestAnimationFrame(() => {
       const pl = txPlayer(prev, P, text, 11);
       pl.card = true; pl.hot = false;
@@ -3610,26 +3695,37 @@
     });
     return card;
   }
+  // Galleria: una scheda alla volta (Preset, I miei, Team). Ricorda l'ultima scelta.
+  const TX_SAMPLE = 'Ciao a te';
   function txGallery() {
     const g = $('#txGal');
     if (!g) return;
     TX.players = TX.players.filter((p) => !g.contains(p.box));
     g.textContent = '';
+    const team = (TEAM && TEAM.text) || [];
+    let tab = TX.galTab || (localStorage.getItem('mt.txTab') || 'builtin');
+    const tabs = [['builtin', 'Preset', TX_BUILTIN.length], ['user', 'I miei', TX.user.length], ['team', 'Team', team.length]];
+    const seg = $('#txTabs');
+    if (seg) {
+      seg.textContent = '';
+      tabs.forEach(([k, lab, n]) => {
+        const b = h('button', { role: 'radio', class: k === tab ? 'is-on' : '', 'aria-checked': k === tab ? 'true' : 'false' }, lab, h('span', { class: 'segn', text: String(n) }));
+        b.addEventListener('click', () => { TX.galTab = k; try { localStorage.setItem('mt.txTab', k); } catch (e) {} txGallery(); });
+        seg.append(b);
+      });
+    }
     const readBtn = txReadButton();
     if (readBtn) add(g, readBtn);
-    const group = (title, list, src) => {
-      if (!list.length) return;
-      add(g, h('div', { class: 'subhead', text: title }), h('div', { class: 'txgrid' }, list.map((P) => txCard(P, src))));
-    };
-    txUserSection(g);
-    group(TEAM && TEAM.name && TEAM.name !== 'Team' ? `Team · ${TEAM.name}` : 'Team', (TEAM && TEAM.text) || [], 'team');
-    group('Preset', TX_BUILTIN, 'builtin');
+    if (tab === 'user') return txUserSection(g);
+    const list = tab === 'team' ? team : TX_BUILTIN;
+    if (!list.length) { add(g, h('p', { class: 'hint', text: 'Nessuna animazione del team. Aprine una e scegli Salva nel team, sotto Modifica.' })); return; }
+    add(g, h('div', { class: 'txgrid' }, list.map((P) => txCard(P, tab))));
   }
 
   /* --- cartelle dei preset personali: si creano, si rinominano e ci si trascinano i preset --- */
 
   function txUserSection(g) {
-    const head = h('div', { class: 'subhead txsub' }, h('span', { text: 'I miei' }), h('button', { class: 'txfolderadd', text: '+ Cartella', 'data-tip': 'Crea una cartella e trascinaci dentro i preset' }));
+    const head = h('div', { class: 'txsub' }, h('span', { class: 'faint', text: TX.user.length ? 'Trascina i preset nelle cartelle' : 'Salva un’animazione per trovarla qui' }), h('button', { class: 'txfolderadd', text: '+ Cartella', 'data-tip': 'Crea una cartella e trascinaci dentro i preset' }));
     head.querySelector('.txfolderadd').addEventListener('click', txFolderNew);
     const zone = (folder, list) => {
       const box = h('div', { class: 'txfolder' + (folder ? '' : ' is-root') });
@@ -3767,7 +3863,9 @@
   }
   function txPreview() {
     const stage = $('#txStage');
-    if (!stage || !TX.cur) return;
+    if (!stage) return;
+    $('#txStageEmpty').hidden = !!TX.cur;
+    if (!TX.cur) { stage.textContent = ''; TX.players = TX.players.filter((p) => p.box !== stage); return; }
     TX.players = TX.players.filter((p) => p.box !== stage);
     TX.players.push(txPlayer(stage, TX.cur, TX.previewText || txSampleText(), 30));
     txKick();
@@ -3777,17 +3875,12 @@
     if (!box) return;
     box.textContent = '';
     const P = TX.cur;
-    if (!P) { add(box, h('p', { class: 'hint', text: 'Scegli un preset qui sopra per modificarlo.' })); return; }
+    if (!P) { add(box, h('p', { class: 'hint', text: 'Scegli un’animazione qui sopra per modificarla.' })); txPreview(); return; }
     $('#txEditName').textContent = P.name ? `· ${P.name}` : '';
     const fps = fpsNow();
     const fr = (s) => Math.round((s || 0) * fps * 10) / 10;
     const sec = (f) => Math.max(0, f) / fps;
 
-    const stage = h('div', { class: 'txstage', id: 'txStage' });
-    const replay = h('button', { class: 'ibtn sm txreplay', 'data-tip': 'Riparti da capo' });
-    replay.innerHTML = '<svg viewBox="0 0 16 16"><path d="M3.5 8a4.5 4.5 0 1 0 1.4-3.3M3.5 2.5v2.6h2.6"/></svg>';
-    replay.addEventListener('click', txPreview);
-    add(box, h('div', { class: 'txstagewrap' }, stage, replay));
     const pt = h('input', { type: 'text', class: 'txinput', placeholder: 'Testo di prova (di base quello del layer selezionato)', value: TX.previewText || '' });
     pt.addEventListener('input', () => { TX.previewText = pt.value; txPreview(); });
     add(box, row('Anteprima', pt));
@@ -3917,13 +4010,11 @@
       bUpd.addEventListener('click', () => txUpdate(origin));
       btns.push(bUpd);
     }
-    const bSave = h('button', { class: 'btn', text: origin ? 'Salva come nuovo' : 'Salva nei miei' });
-    bSave.addEventListener('click', () => txSaveAs('user', true));
     const bTeam = h('button', { class: 'btn', text: 'Salva nel team' });
     bTeam.addEventListener('click', () => txSaveAs('team', true));
     const bExp = h('button', { class: 'btn', text: 'Esporta' });
     bExp.addEventListener('click', () => txExport(TX.cur));
-    btns.push(bSave, bTeam, bExp);
+    btns.push(bTeam, bExp);
     add(box, h('div', { class: 'btnrow' }, ...btns));
     txPreview();
   }
@@ -4000,6 +4091,10 @@
     TX.state = st;
     const el = $('#txSel');
     if (el) el.textContent = st.count ? (st.count === 1 ? st.name : `${st.count} layer di testo`) : 'Seleziona un layer di testo';
+    const sub = $('#txSub');
+    if (sub) sub.textContent = !st.count ? 'Poi scegli un’animazione e premi Applica'
+      : st.applied ? `Layer di testo, ha già ${st.applied.name || 'un’animazione di Motion Tools'}`
+      : 'Layer di testo, nessuna animazione di Motion Tools';
     $('#app').classList.toggle('no-text', !st.count);
     const key = `${st.id || ''}|${st.count}|${st.text || ''}`;
     if (key === txLastSel) return;
@@ -4446,11 +4541,13 @@
     ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); addN(); } });
     const btn = h('button', { class: 'btn primary', text: 'Aggiungi al tempo attuale', 'data-tip': 'Cmd+Invio dal campo di testo' });
     btn.addEventListener('click', addN);
+    sign.setAttribute('aria-label', 'Firma'); ta.setAttribute('aria-label', 'Nota');
+    sign.classList.add('ntsign');
+    const mac = /Mac/i.test(navigator.platform || '');
     add(box,
-      row('Firma', sign),
-      h('div', { class: 'prow top' }, h('span', { class: 'plabel', text: 'Nota' }), ta),
-      row('Dove', segc([[0, 'Composizione', 'Marcatore sulla composizione'], [1, 'Layer selezionato', 'Marcatore sul layer selezionato: si sposta insieme al layer']], NT.onLayer ? 1 : 0, (v) => { NT.onLayer = +v === 1; saveNT(); })),
-      h('div', { class: 'btnrow' }, btn),
+      ta,
+      h('div', { class: 'ntline' }, sign, segc([[0, 'Sulla comp', 'Marcatore sulla composizione'], [1, 'Sul layer', 'Marcatore sul layer selezionato: si sposta insieme al layer']], NT.onLayer ? 1 : 0, (v) => { NT.onLayer = +v === 1; saveNT(); })),
+      h('div', { class: 'ntline' }, h('span', { class: 'faint ntkeys' }, h('span', { class: 'kc', text: mac ? '⌘' : 'Ctrl' }), h('span', { class: 'kc', text: '↵' }), ' dal testo'), h('span', { class: 'grow' }), btn),
     );
   }
 
@@ -4471,10 +4568,12 @@
     box.textContent = '';
     const all = NT.list.slice().sort((a, b) => (a.compId - b.compId) || (a.time - b.time));
     const open = all.filter((n) => !n.done), done = all.filter((n) => n.done);
-    $('#ntCount').textContent = all.length ? `· ${open.length} da fare${done.length ? `, ${done.length} fatte` : ''}` : '';
-    add(box, h('div', { class: 'prow' },
-      segc([['comp', 'Questa composizione'], ['project', 'Tutto il progetto']], NT.scope, (v) => { NT.scope = v; saveNT(); NT.key = ''; notesRead(true); }),
-      check('Mostra fatte', NT.showDone, (v) => { NT.showDone = !!v; saveNT(); renderNotes(); })));
+    $('#ntCount').textContent = all.length ? `${open.length} da fare${done.length ? `, ${done.length} ${done.length === 1 ? 'fatta' : 'fatte'}` : ''}` : '';
+    NT.open = open.length; ntHead();
+    add(box, h('div', { class: 'ntline' },
+      segc([['comp', 'Questa comp'], ['project', 'Progetto']], NT.scope, (v) => { NT.scope = v; saveNT(); NT.key = ''; notesRead(true); }),
+      h('span', { class: 'grow' }),
+      check('Mostra le fatte', NT.showDone, (v) => { NT.showDone = !!v; saveNT(); renderNotes(); })));
     const list = NT.showDone ? all : open;
     if (!list.length) {
       add(box, h('p', { class: 'hint', text: all.length ? 'Tutte le note sono fatte.' : 'Nessuna nota. Le note sono marcatori: le vede chiunque apra il progetto, anche senza Motion Tools.' }));
@@ -4503,6 +4602,18 @@
     });
   }
 
+  // Intestazione: la comp e quante note restano da fare.
+  function ntHead() {
+    const t = $('#ntComp'), sub = $('#ntSub');
+    if (!t) return;
+    t.textContent = (S.ae && S.ae.comp) || 'Note';
+    if (!(S.ae && S.ae.comp)) { sub.textContent = 'Apri una composizione'; return; }
+    const n = NT.open || 0, m = (SY.info && SY.info.masters || []).length;
+    const parts = [n ? `${n} ${n === 1 ? 'nota' : 'note'} da fare` : 'Nessuna nota da fare'];
+    if (m) parts.push(`${m} ${m === 1 ? 'marcatore collegato' : 'marcatori collegati'}`);
+    sub.textContent = parts.join(', ');
+  }
+
   /* marcatori collegati tra composizioni */
   const SY = { info: null, draft: '', key: '' };
   async function syncRead(force) {
@@ -4519,10 +4630,12 @@
     if (!box || isTyping(box)) return;
     box.textContent = '';
     const I = SY.info || {};
-    const setMain = h('button', { class: 'btn sm', text: I.main && I.active && I.main.id === I.active.id ? 'Questa è la principale' : 'Usa questa composizione', 'data-tip': 'La composizione di riferimento: i marcatori collegati partono da qui' });
+    ntHead();
+    const nm = $('#ntSyncN'); if (nm) nm.textContent = (I.masters || []).length ? String(I.masters.length) : '';
+    const setMain = h('button', { class: 'btn sm ghost', text: I.main && I.active && I.main.id === I.active.id ? 'È questa' : 'Imposta questa', 'data-tip': 'La composizione di riferimento: i marcatori collegati partono da qui' });
     setMain.disabled = !I.active || (I.main && I.main.id === I.active.id);
     setMain.addEventListener('click', async () => { const r = await call('inflect_mainSet'); if (!r.ok) return toast(r.error, 'err'); toast(`${r.main.name} è la composizione principale.`); SY.key = ''; syncRead(true); });
-    add(box, row('Principale', h('span', { class: I.main ? 'ntauth' : 'faint', text: I.main ? I.main.name : 'Nessuna' }), setMain));
+    add(box, h('div', { class: 'ntline' }, h('span', { class: 'ntmain' }, h('span', { class: 'faint', text: 'Comp principale ' }), h('span', { class: I.main ? 'ntauth' : 'faint', text: I.main ? I.main.name : 'nessuna' })), h('span', { class: 'grow' }), setMain));
     if (!I.main) { add(box, h('p', { class: 'hint', text: 'Apri la composizione finale (quella che esporti) e premi Usa questa composizione. I marcatori collegati che aggiungi finiscono in tutte le precomposizioni, nello stesso istante del video.' })); return; }
     const inp = h('input', { type: 'text', class: 'txinput', placeholder: 'Es. Drop, Cambio scena, Logo', value: SY.draft || '' });
     inp.addEventListener('input', () => { SY.draft = inp.value; });
@@ -4538,7 +4651,7 @@
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addS(); } });
     const b = h('button', { class: 'btn', text: 'Aggiungi ovunque', 'data-tip': 'Al tempo attuale, anche se sei dentro una precomposizione' });
     b.addEventListener('click', addS);
-    add(box, row('Testo', inp, b));
+    const rows = [];
     (I.masters || []).slice().sort((a, c) => a.time - c.time).forEach((m) => {
       const rm = h('button', { class: 'ibtn sm', 'data-tip': 'Toglie il marcatore da tutte le composizioni' });
       rm.innerHTML = '<svg viewBox="0 0 16 16"><path d="m4.5 4.5 7 7M11.5 4.5l-7 7"/></svg>';
@@ -4547,9 +4660,10 @@
         h('span', { class: 'ntmeta' }, h('span', { class: 'tc', text: fmtTC(m.time, I.fps || 25) }), m.author ? h('span', { class: 'faint', text: m.author }) : null),
         h('span', { class: 'nttext', text: m.text }));
       go.addEventListener('click', () => call('inflect_syncGo', m.id));
-      add(box, h('div', { class: 'ntrow' }, h('span', { class: 'syncdot' }), go, h('span', { class: 'ntacts' }, rm)));
+      rows.push(h('div', { class: 'ntrow' }, h('span', { class: 'syncdot' }), go, h('span', { class: 'ntacts' }, rm)));
     });
-    const upd = h('button', { class: 'btn sm', text: 'Riallinea in tutte le composizioni', 'data-tip': 'Dopo aver spostato, accorciato o stirato i layer delle precomposizioni' });
+    add(box, ...rows, h('div', { class: 'ntline' }, inp, b));
+    const upd = h('button', { class: 'btn sm ghost', text: 'Riallinea le comp', 'data-tip': 'Dopo aver spostato, accorciato o stirato i layer delle precomposizioni' });
     upd.addEventListener('click', async () => { const r = await call('inflect_syncAll'); if (!r.ok) return toast(r.error, 'err'); toast(`${r.masters} marcatori riallineati in ${r.comps.length} composizioni.${r.skipped.length ? ' Saltati dove c’era già un altro marcatore.' : ''}`); SY.key = ''; syncRead(true); });
     if ((I.masters || []).length) add(box, h('div', { class: 'btnrow' }, upd));
   }
@@ -4590,6 +4704,15 @@
     if (!b) return;
     switch (b.dataset.act) {
       case 'tx-fromlayer': txFromLayer(); break;
+      case 'tx-save': if (TX.cur) txSaveAs('user', true); else txFromLayer(); break;
+      case 'tx-replay': txPreview(); break;
+      case 'tx-more': openMenu(b, [
+        TX.state && TX.state.count && !TX.state.applied ? { label: 'Leggi l’animazione del layer', run: txReadKeys } : null,
+        { label: 'Salva l’animazione del layer come preset', run: txFromLayer },
+        { label: 'Importa da file…', run: txImport },
+        '-',
+        { label: 'Togli l’animazione dai layer', danger: true, run: txRemove },
+      ].filter(Boolean)); break;
       case 'consolida': consolida(); break;
       case 'tx-apply': txApply(); break;
       case 'tx-remove': txRemove(); break;

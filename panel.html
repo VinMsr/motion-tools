@@ -111,12 +111,12 @@
       <aside class="view view-library" data-view="library">
         <div class="libsearch">
           <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.25"/><path d="m10.25 10.25 3 3"/></svg>
-          <input id="search" type="search" placeholder="Cerca" aria-label="Cerca curve">
+          <input id="search" type="search" placeholder="Cerca in tutte le curve" aria-label="Cerca curve">
         </div>
         <div class="libscroll" id="libScroll">
           <details class="libsec brand" id="secBrand" data-sec="lib-brand" open>
             <summary>
-              <span class="dot"></span><span class="ltitle" id="brandTitle">Brand</span>
+              <span class="dot"></span><span class="ltitle" id="brandTitle">Brand</span><span class="secn" id="cntBrand"></span>
               <button class="ibtn" data-act="brandmenu" data-tip="Libreria, cartella condivisa, blocco"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
             </summary>
             <p class="libsub" id="brandSub"></p>
@@ -124,21 +124,21 @@
           </details>
           <details class="libsec" id="secUser" data-sec="lib-user" open>
             <summary>
-              <span class="ltitle">Le mie curve</span>
+              <span class="ltitle">Le mie curve</span><span class="secn" id="cntUser"></span>
               <button class="ibtn" data-act="usermenu" data-tip="Esporta e importa"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
             </summary>
             <div class="liblist" id="listUser"></div>
           </details>
           <details class="libsec" id="secProject" data-sec="lib-project" open>
             <summary>
-              <span class="ltitle">Progetto</span>
+              <span class="ltitle">Progetto</span><span class="secn" id="cntProject"></span>
               <button class="ibtn" data-act="projectmenu" data-tip="Opzioni delle curve del progetto"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
             </summary>
             <p class="libsub" id="projectSub"></p>
             <div class="liblist" id="listProject"></div>
           </details>
           <details class="libsec" id="secPreset" data-sec="lib-preset" open>
-            <summary><span class="ltitle">Preset</span></summary>
+            <summary><span class="ltitle">Preset</span><span class="secn" id="cntPreset"></span></summary>
             <div class="liblist" id="listPreset"></div>
           </details>
         </div>
@@ -146,31 +146,16 @@
 
       <!-- ============================================================ ALLINEA -->
       <section class="view view-align" data-view="align">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="alSel">Seleziona uno o più layer</strong><span class="vsub" id="alSub">Rispetto alla composizione</span></div>
+        </div>
         <div class="secs" id="alignWrap">
-          <details class="sec needs-layers" data-sec="anchor" open>
-            <summary>Punto di ancoraggio</summary>
-            <div class="sec-body">
-              <div class="anchorgrid" id="anchorGrid" role="group" aria-label="Posizione del punto di ancoraggio"></div>
-            </div>
-          </details>
           <details class="sec needs-layers" data-sec="align" open>
-            <summary>Allinea</summary>
+            <summary>Allinea e distribuisci</summary>
             <div class="sec-body">
-              <div class="prow">
-                <span class="plabel">Rispetto a</span>
-                <div class="seg" id="alignTarget" role="radiogroup">
-                  <button data-target="comp" class="is-on" role="radio" data-tip="Bordi e centro della composizione">Composizione</button>
-                  <button data-target="selection" role="radio" data-tip="I layer selezionati tra loro">Selezione</button>
-                </div>
-              </div>
-              <div class="prow">
-                <span class="plabel">Come gruppo</span>
-                <label class="check" data-tip="I layer selezionati si spostano insieme, come un blocco: le distanze tra loro restano uguali. Con Selezione, ogni gruppo salvato fa da blocco"><input type="checkbox" id="alignGroup"><span>Mantieni le distanze</span></label>
-              </div>
-              <div class="prow">
-                <span class="plabel">Gruppi</span>
-                <span class="groups" id="groupList"></span>
-                <button class="btn sm" data-act="group-new" data-tip="Salva i layer selezionati come gruppo, per riselezionarli e allinearli come un blocco">Crea gruppo</button>
+              <div class="seg full" id="alignTarget" role="radiogroup" aria-label="Rispetto a">
+                <button data-target="comp" class="is-on" role="radio" data-tip="Bordi e centro della composizione">Alla composizione</button>
+                <button data-target="selection" role="radio" data-tip="I layer selezionati tra loro">Alla selezione</button>
               </div>
               <div class="tools">
                 <button class="tbtn" data-align="left" data-tip="Allinea a sinistra"><svg viewBox="0 0 20 20"><path class="g" d="M3.5 2.5v15"/><rect x="6" y="5" width="10" height="3.5" rx=".75"/><rect x="6" y="11.5" width="6" height="3.5" rx=".75"/></svg></button>
@@ -182,16 +167,23 @@
                 <button class="tbtn" data-align="bottom" data-tip="Allinea in basso"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 16.5h15"/><rect x="5" y="4" width="3.5" height="10" rx=".75"/><rect x="11.5" y="8" width="3.5" height="6" rx=".75"/></svg></button>
                 <i class="vsep"></i>
                 <button class="tbtn" data-align="center" data-tip="Centra nella composizione"><svg viewBox="0 0 20 20"><path class="g" d="M10 2.5v15M2.5 10h15"/><rect x="7.25" y="7.25" width="5.5" height="5.5" rx=".5"/></svg></button>
-              </div>
-            </div>
-          </details>
-          <details class="sec needs-layers" data-sec="dist" open>
-            <summary>Distribuisci</summary>
-            <div class="sec-body">
-              <div class="tools">
+                <i class="vsep"></i>
                 <button class="tbtn" data-dist="h" data-tip="Stessa distanza orizzontale tra i centri (almeno tre layer)"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 3v14M17.5 3v14"/><rect x="5" y="6" width="2.5" height="8" rx=".6"/><rect x="8.75" y="6" width="2.5" height="8" rx=".6"/><rect x="12.5" y="6" width="2.5" height="8" rx=".6"/></svg></button>
                 <button class="tbtn" data-dist="v" data-tip="Stessa distanza verticale tra i centri (almeno tre layer)"><svg viewBox="0 0 20 20"><path class="g" d="M3 2.5h14M3 17.5h14"/><rect x="6" y="5" width="8" height="2.5" rx=".6"/><rect x="6" y="8.75" width="8" height="2.5" rx=".6"/><rect x="6" y="12.5" width="8" height="2.5" rx=".6"/></svg></button>
               </div>
+              <label class="check" data-tip="I layer selezionati si spostano insieme, come un blocco: le distanze tra loro restano uguali. Con Selezione, ogni gruppo salvato fa da blocco"><input type="checkbox" id="alignGroup"><span>Muovi come un blocco, le distanze restano</span></label>
+              <div class="prow">
+                <span class="plabel">Gruppi</span>
+                <span class="groups" id="groupList"></span>
+                <span class="grow"></span>
+                <button class="btn sm ghost" data-act="group-new" data-tip="Salva i layer selezionati come gruppo, per riselezionarli e allinearli come un blocco">Crea gruppo</button>
+              </div>
+            </div>
+          </details>
+          <details class="sec needs-layers" data-sec="anchor" open>
+            <summary>Punto di ancoraggio</summary>
+            <div class="sec-body">
+              <div class="anchorgrid" id="anchorGrid" role="group" aria-label="Posizione del punto di ancoraggio"></div>
             </div>
           </details>
           <details class="sec" data-sec="guides" open>
@@ -207,6 +199,9 @@
 
       <!-- ============================================================ UTILITY -->
       <section class="view view-utility" data-view="utility">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="utSel">Utility</strong><span class="vsub" id="utSub">Righello, composizione, copia e incolla, liste</span></div>
+        </div>
         <div class="secs" id="utilWrap">
           <details class="sec" data-sec="cartelle" open>
             <summary>Cartelle NEW e OLD</summary>
@@ -273,57 +268,60 @@
 
       <!-- ============================================================= REPEAT -->
       <section class="view view-repeat" data-view="repeat">
-        <div class="secs" id="repWrap">
-
-          <!-- Nuovo Cloner: si apre quando sono selezionati dei layer -->
-          <div id="repCreate">
-            <details class="sec" data-sec="rep-new" open>
-              <summary>Nuovo Cloner</summary>
-              <div class="sec-body" id="repNewBody"></div>
-            </details>
-            <div class="actionrow"><button class="btn primary" data-act="rep-create" data-tip="Crea il controllo e le copie dei layer selezionati">Crea Cloner</button></div>
+        <!-- Nuovo Cloner: si apre quando sono selezionati dei layer -->
+        <div class="vpane" id="repCreate">
+          <div class="vhead">
+            <div class="vhead-txt"><strong class="vtitle">Nuovo Cloner</strong><span class="vsub" id="repNewSub">Dai layer selezionati</span></div>
+            <button class="btn sm ghost" data-act="rep-back" id="repBack" hidden>Torna al Cloner</button>
           </div>
+          <div class="vwell repwell"><svg id="repPreview" class="reppreview" role="img" aria-label="Anteprima della distribuzione"></svg><span class="wellcap" id="repNewCap"></span></div>
+          <div class="secs" id="repWrap">
+            <div class="sec-body flat" id="repNewBody"></div>
+          </div>
+          <div class="vdock">
+            <span class="vhint">Poi aggiungi falloff e comportamenti</span>
+            <button class="btn primary" data-act="rep-create" data-tip="Crea il controllo e le copie dei layer selezionati">Crea Cloner</button>
+          </div>
+        </div>
 
-          <!-- Modifica: si apre quando è selezionato un Cloner o una sua copia -->
-          <div id="repEdit" hidden>
-            <div class="rephead">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1" opacity=".6"/><rect x="2" y="9" width="5" height="5" rx="1" opacity=".6"/><rect x="9" y="9" width="5" height="5" rx="1" opacity=".3"/></svg>
-              <strong id="repName">Cloner</strong>
-              <span class="repmeta" id="repMeta"></span>
-              <span class="grow"></span>
-              <button class="ibtn" data-act="rep-refresh" data-tip="Rileggi il Cloner da After Effects"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
-              <button class="btn sm" data-act="rep-new" data-tip="Crea un altro Cloner dai layer selezionati">Nuovo</button>
-              <button class="btn sm" data-act="rep-recipe" data-tip="Animazioni pronte: cascata, pop casuale, onda, anello 3D">Animazioni</button>
-              <button class="ibtn" data-act="rep-menu" data-tip="Seleziona controllo o copie, elimina"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
-            </div>
+        <!-- Modifica: si apre quando è selezionato un Cloner o una sua copia -->
+        <div class="vpane" id="repEdit" hidden>
+          <div class="vhead">
+            <div class="vhead-txt"><strong class="vtitle" id="repName">Cloner</strong><span class="vsub" id="repMeta"></span></div>
+            <button class="btn sm ghost" data-act="rep-new" data-tip="Crea un altro Cloner dai layer selezionati">Nuovo</button>
+            <button class="btn sm" data-act="rep-recipe" data-tip="Animazioni pronte: cascata, pop casuale, onda, anello 3D">Animazioni</button>
+            <button class="ibtn" data-act="rep-refresh" aria-label="Rileggi" data-tip="Rileggi il Cloner da After Effects"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
+            <button class="ibtn" data-act="rep-menu" aria-label="Altro" data-tip="Nuovo Cloner, seleziona controllo o copie, elimina"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+          </div>
+          <div class="secs">
             <details class="sec" data-sec="rep-dist" open>
-              <summary>Distribuzione</summary>
+              <summary>Distribuzione <span class="secn" id="repDistName"></span></summary>
               <div class="sec-body" id="repDistBody"></div>
             </details>
             <details class="sec" data-sec="rep-fall" open>
-              <summary>Falloff
+              <summary>Falloff <span class="secn" id="repFallN"></span>
                 <span class="grow"></span>
-                <button class="ibtn sm" data-act="rep-add-fall" data-tip="Aggiungi un falloff alla composizione"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
+                <button class="btn sm ghost addbtn" data-act="rep-add-fall" data-tip="Aggiungi un falloff alla composizione"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg>Falloff</button>
               </summary>
               <div class="sec-body" id="repFallBody"></div>
             </details>
-            <details class="sec" data-sec="rep-lists" open>
-              <summary>Colori e testi</summary>
-              <div class="sec-body" id="repListBody"></div>
-            </details>
             <details class="sec" data-sec="rep-beh" open>
-              <summary>Comportamenti
+              <summary>Comportamenti <span class="secn" id="repBehN"></span>
                 <span class="grow"></span>
-                <button class="ibtn sm" data-act="rep-add-beh" data-tip="Aggiungi un comportamento: Stagger, Casuale, Rumore, Oscillatore, Valore o Lista"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
+                <button class="btn sm ghost addbtn" data-act="rep-add-beh" data-tip="Aggiungi un comportamento: Stagger, Casuale, Rumore, Oscillatore, Valore o Lista"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg>Comportamento</button>
               </summary>
               <div class="sec-body" id="repBehBody"></div>
+            </details>
+            <details class="sec" data-sec="rep-lists">
+              <summary>Colori e testi</summary>
+              <div class="sec-body" id="repListBody"></div>
             </details>
             <details class="sec" data-sec="rep-tr">
               <summary>Trasforma</summary>
               <div class="sec-body" id="repTrBody"></div>
             </details>
             <details class="sec" data-sec="rep-src">
-              <summary>Input</summary>
+              <summary>Input <span class="secn" id="repSrcN"></span></summary>
               <div class="sec-body" id="repSrcBody"></div>
             </details>
           </div>
@@ -337,20 +335,14 @@
 
       <!-- =========================================================== ANALISI -->
       <section class="view view-audit" data-view="audit">
-        <div class="anhead">
-          <strong id="anComp">Analisi della timeline</strong>
-          <span class="repmeta" id="anMeta"></span>
-          <span class="grow"></span>
-          <button class="btn sm" data-act="analyze" data-tip="Rianalizza la composizione attiva">Aggiorna</button>
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="anComp">Analisi della timeline</strong><span class="vsub" id="anMeta"></span></div>
+          <button class="ibtn" data-act="analyze" aria-label="Aggiorna" data-tip="Rianalizza la composizione attiva"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
+        </div>
+        <div class="vwell chart" id="anChart"><svg id="anSvg" role="img" aria-label="Keyframe e movimento nel tempo. Clic per spostare l’indicatore del tempo" data-tip="Clic per spostare l’indicatore del tempo"></svg><div class="chart-tip" id="anTip" hidden></div>
+          <div class="legend2 welllegend"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span></div>
         </div>
         <div class="secs" id="anWrap">
-          <details class="sec" data-sec="an-chart" open>
-            <summary>Ritmo</summary>
-            <div class="sec-body">
-              <div class="chart" id="anChart"><svg id="anSvg" role="img" aria-label="Keyframe e movimento nel tempo"></svg><div class="chart-tip" id="anTip" hidden></div></div>
-              <div class="legend2"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span><span class="faint">Clic sul grafico per spostare l'indicatore del tempo</span></div>
-            </div>
-          </details>
           <details class="sec" data-sec="an-stats" open>
             <summary>Panoramica</summary>
             <div class="sec-body"><div class="stats" id="anStats"></div></div>
@@ -379,68 +371,77 @@
       </section>
       <!-- ============================================================= TESTO -->
       <section class="view view-text" data-view="text">
-        <div class="anhead">
-          <strong id="txSel">Seleziona un layer di testo</strong>
-          <span class="grow"></span>
-          <button class="btn sm" data-act="tx-fromlayer" data-tip="Salva come preset l’animazione del layer selezionato, anche se l’hai fatta a mano in After Effects">Salva come preset</button>
-          <button class="btn sm" data-act="tx-import" data-tip="Carica un’animazione da un file .json, anche una che ti ho preparato">Importa</button>
-          <button class="btn sm" data-act="tx-remove" data-tip="Toglie l’animazione di Motion Tools dai layer di testo selezionati">Togli</button>
-          <button class="btn sm primary" data-act="tx-apply" data-tip="Applica l’animazione ai layer di testo selezionati">Applica</button>
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="txSel">Seleziona un layer di testo</strong><span class="vsub" id="txSub">Poi scegli un’animazione e premi Applica</span></div>
+          <button class="ibtn" data-act="tx-more" aria-label="Altro" data-tip="Leggi dal layer, importa da file, togli l’animazione"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+        </div>
+        <div class="vwell txwell">
+          <div class="txstage" id="txStage"></div>
+          <p class="wellempty" id="txStageEmpty">Scegli un’animazione per vederla qui</p>
+          <button class="ibtn sm txreplay" data-act="tx-replay" aria-label="Riparti da capo" data-tip="Riparti da capo"><svg viewBox="0 0 16 16"><path d="M3.5 8a4.5 4.5 0 1 0 1.4-3.3M3.5 2.5v2.6h2.6"/></svg></button>
         </div>
         <div class="secs" id="txWrap">
           <details class="sec" data-sec="tx-gal" open>
             <summary>Animazioni</summary>
-            <div class="sec-body" id="txGal"></div>
+            <div class="sec-body">
+              <div class="seg txtabs" id="txTabs" role="radiogroup" aria-label="Quali animazioni"></div>
+              <div class="txlist" id="txGal"></div>
+            </div>
           </details>
           <details class="sec" data-sec="tx-edit" open>
             <summary>Modifica <span class="faint" id="txEditName"></span></summary>
             <div class="sec-body" id="txEdit"><p class="hint">Scegli un’animazione qui sopra per modificarla.</p></div>
           </details>
         </div>
+        <div class="vdock">
+          <span class="grow"></span>
+          <button class="btn" data-act="tx-save" data-tip="Salva nei miei preset l’animazione aperta, o quella del layer selezionato">Salva come preset</button>
+          <button class="btn primary" data-act="tx-apply" data-tip="Applica l’animazione ai layer di testo selezionati">Applica</button>
+        </div>
       </section>
 
       <!-- ============================================================== NOTE -->
       <section class="view view-notes" data-view="notes">
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="ntComp">Note</strong><span class="vsub" id="ntSub">Apri una composizione</span></div>
+          <button class="ibtn" data-act="analyze" aria-label="Rileggi il ritmo" data-tip="Rileggi keyframe e movimento della comp aperta"><svg viewBox="0 0 16 16"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2M12.5 2.5v3h-3"/></svg></button>
+        </div>
+        <div class="vwell chart ntchart">
+          <svg id="ntSvg" role="img" aria-label="Ritmo della composizione con marcatori collegati e note"></svg>
+          <p class="ntempty">Premi il pulsante in alto per leggere il ritmo della comp.</p>
+          <div class="legend2 welllegend"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span><span><i class="ln"></i>Note</span></div>
+        </div>
         <div class="secs" id="ntWrap">
-          <details class="sec" data-sec="nt-rhythm" open>
-            <summary>Ritmo della comp</summary>
-            <div class="sec-body">
-              <div class="chart ntchart"><svg id="ntSvg" role="img" aria-label="Ritmo della composizione con marcatori collegati e note"></svg><p class="ntempty">Premi Aggiorna per leggere il ritmo della comp.</p></div>
-              <div class="legend2"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span><span><i class="ln"></i>Note</span><span class="grow"></span><button class="btn sm ghost" data-act="analyze" data-tip="Rileggi keyframe e movimento della comp aperta">Aggiorna</button></div>
-            </div>
-          </details>
           <details class="sec" data-sec="nt-new" open>
             <summary>Nuova nota</summary>
             <div class="sec-body" id="ntNew"></div>
           </details>
-          <details class="sec" data-sec="nt-sync" open>
-            <summary>Marcatori collegati</summary>
-            <div class="sec-body">
-              <label class="check" data-tip="Spento di default: con l’opzione accesa, le comp nuove dentro la principale ricevono i marcatori da sole. Con molte comp può rallentare After Effects, quindi conviene tenerla spenta e usare Riallinea quando serve."><input type="checkbox" id="syncAutoOn"><span>Aggiungi in automatico alle comp nuove</span></label>
-              <div id="ntSync"></div>
-            </div>
-          </details>
           <details class="sec" data-sec="nt-list" open>
-            <summary>Note <span class="faint" id="ntCount"></span></summary>
+            <summary>Note <span class="secn" id="ntCount"></span></summary>
             <div class="sec-body" id="ntList"></div>
+          </details>
+          <details class="sec" data-sec="nt-sync" open>
+            <summary>Marcatori collegati <span class="secn" id="ntSyncN"></span></summary>
+            <div class="sec-body">
+              <div id="ntSync"></div>
+              <label class="check" data-tip="Spento di default: con l’opzione accesa, le comp nuove dentro la principale ricevono i marcatori da sole. Con molte comp può rallentare After Effects, quindi conviene tenerla spenta e usare Riallinea quando serve."><input type="checkbox" id="syncAutoOn"><span>Anche nelle comp nuove</span></label>
+            </div>
           </details>
         </div>
       </section>
 
       <!-- ============================================================== TEAM -->
       <section class="view view-team" data-view="team">
-        <div class="anhead">
-          <strong id="tmName">Team</strong>
-          <span class="repmeta" id="tmFolder"></span>
-          <span class="grow"></span>
+        <div class="vhead">
+          <div class="vhead-txt"><strong class="vtitle" id="tmName">Team</strong><span class="vsub" id="tmFolder"></span></div>
           <button class="btn sm" data-act="tm-folder" data-tip="Scegli la cartella condivisa (Drive, Dropbox, server) dove il team tiene la libreria">Cartella…</button>
-          <button class="ibtn" data-act="tm-menu" data-tip="Altre azioni"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+          <button class="ibtn" data-act="tm-menu" aria-label="Altro" data-tip="Altre azioni"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
         </div>
         <div class="secs" id="tmWrap">
-          <details class="sec" data-sec="tm-colors" open><summary>Palette</summary><div class="sec-body" id="tmColors"></div></details>
-          <details class="sec" data-sec="tm-text" open><summary>Animazioni di testo</summary><div class="sec-body" id="tmText"></div></details>
-          <details class="sec" data-sec="tm-curves" open><summary>Curve</summary><div class="sec-body" id="tmCurves"></div></details>
-          <details class="sec" data-sec="tm-lists" open><summary>Liste</summary><div class="sec-body" id="tmLists"></div></details>
+          <details class="sec" data-sec="tm-colors" open><summary>Palette <span class="secn" id="tmNColors"></span></summary><div class="sec-body" id="tmColors"></div></details>
+          <details class="sec" data-sec="tm-text" open><summary>Animazioni di testo <span class="secn" id="tmNText"></span></summary><div class="sec-body" id="tmText"></div></details>
+          <details class="sec" data-sec="tm-curves" open><summary>Curve <span class="secn" id="tmNCurves"></span></summary><div class="sec-body" id="tmCurves"></div></details>
+          <details class="sec" data-sec="tm-lists" open><summary>Liste <span class="secn" id="tmNLists"></span></summary><div class="sec-body" id="tmLists"></div></details>
         </div>
       </section>
     </main>

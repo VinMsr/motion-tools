@@ -1,3 +1,20 @@
+Motion Tools 2.36.0
+- Tutte le schede seguono il nuovo disegno. In alto c'è sempre il nome di quello su cui lavori, con una riga che spiega la situazione. L'azione principale sta nella barra in basso.
+- Testo:
+  - l'anteprima grande è fissa in alto e mostra l'animazione scelta sul testo del layer;
+  - le animazioni sono divise in Preset, I miei e Team, con il numero accanto;
+  - in basso ci sono Salva come preset e Applica. Leggi dal layer, Importa e Togli sono nel menu con i tre puntini.
+- Libreria: ogni curva mostra i suoi quattro valori. Quella che apri si allarga, con il grafico grande e i pulsanti Apri in Curve e Applica.
+- Cloner:
+  - nel nuovo Cloner l'anteprima è grande e mostra come si alternano i layer di partenza. Le distribuzioni sono riquadri con il disegno, non più un menu;
+  - in alto c'è scritto da quali layer parte ("Da Logo e Pallino");
+  - nella modifica l'intestazione dice quante copie ci sono e come sono disposte. Falloff, Comportamenti e Input mostrano quanti sono.
+- Note: in alto il nome della comp e quante note restano da fare, sotto il ritmo della comp. La nuova nota ha firma e posizione sulla stessa riga.
+- Allinea: allineamento e distribuzione stanno in un'unica striscia, con "Alla composizione" e "Alla selezione" sopra.
+- Analisi: il ritmo è in alto, la panoramica è su tre colonne.
+- Team: ogni sezione mostra quanti elementi contiene.
+- Contiene anche la 2.35: scheda Curve nuova, ritorno a una delle ultime tre versioni dalle Impostazioni, controllo della selezione più leggero.
+
 Motion Tools 2.35.0
 - Scheda Curve rifatta come nel nuovo disegno:
   - in alto il nome della curva e su cosa la stai applicando ("Su Posizione di Hero, 1 segmento"), con l'interruttore Dal vivo a destra;

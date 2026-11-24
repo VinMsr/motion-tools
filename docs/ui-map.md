@@ -56,16 +56,17 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 | Elemento | Stato | Collegamento |
 |---|---|---|
 | Nome del layer | C | `#txSel` |
-| Menu "Altro" | S | `tx-import`, `tx-remove` |
-| Anteprima grande con riparti | C | `txPreview()`, `txPlayer()`, sul testo del layer (`txSampleText`) |
+| Riga sotto il nome (ha già X, nessuna animazione) | C | `#txSub`, da `inflect_textState` |
+| Menu "Altro" | C | `tx-more`: leggi dal layer, salva dal layer, `txImport`, `txRemove` |
+| Anteprima grande con riparti | C | Pozzetto fisso `#txStage`, `tx-replay`, `txPreview()`, sul testo del layer (`txSampleText`) |
 | Rombi delle parole nella striscia | N | Calcolabili da `txDelays()`: posizione di ogni unità nel tempo |
 | Leggi dal layer | C | `txReadButton()` |
-| Preset, I miei, Team | C | `TX_BUILTIN`, `txUserSection()` con cartelle, `TEAM.text` |
-| Elenco al posto della griglia di riquadri | S | Stessi dati di `txCard()`. Il passaggio del mouse anima l'anteprima grande |
+| Preset, I miei, Team | C | Schede `#txTabs` con i conteggi, `TX_BUILTIN`, `txUserSection()` con cartelle, `TEAM.text`. Ricorda la scheda in `mt.txTab` |
+| Elenco al posto della griglia di riquadri | C | Stessi dati di `txCard()`. Il passaggio del mouse anima l'anteprima grande |
 | Anima, Fase, Durata, Sfalsamento, Spostamento, Opacità, Curva | C | Righe di `txEditor()` |
 | "Scala, rotazione, sfocatura e altri 5" | S | Le altre righe di `txEditor()`, chiuse per partire da quelle principali |
 | Aggiorna il layer mentre modifichi | C | Check "Dal vivo" di `txEditor()` |
-| Salva come preset, Applica | C | `tx-fromlayer`/`txSaveAs()`, `tx-apply` |
+| Salva come preset, Applica (barra in basso) | C | `tx-save` (animazione aperta, oppure quella del layer), `tx-apply` |
 
 ## Libreria
 
@@ -73,8 +74,10 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 |---|---|---|
 | Cerca in tutte le curve | C | `#search`, `matches()` |
 | Sezione del team con menu | C | `#secBrand`, `brandmenu` |
+| Conteggi nei titoli delle sezioni | C | `#cntBrand`, `#cntUser`, `#cntProject`, `#cntPreset` |
+| Righe con i quattro valori | C | `.meta` di `renderList()` |
 | Le mie curve, Progetto, Preset | C | `#secUser`/`usermenu`, `#secProject`/`projectmenu`, `#secPreset` |
-| Curva selezionata aperta, Apri in Curve, Applica | C | Clic = `setCurve()`, doppio clic o Invio = `apply()` |
+| Curva selezionata aperta, Apri in Curve, Applica | C | Clic = `setCurve()` e la riga si allarga. Apri in Curve = `showView('curve')`, Applica e doppio clic o Invio = `apply()`. Nella scheda Libreria la barra Curve è nascosta |
 | "Altre 4" | N | Solo interfaccia: mostra il resto della sezione |
 | Avviso "2.31 installato, Ricarica" | S | Oggi è un toast. Ricarica = `reloadPanel()`, Dopo = chiude l'avviso. Il testo segue il caso `pending()` di `updateCheck` |
 
@@ -83,9 +86,11 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 | Elemento | Stato | Collegamento |
 |---|---|---|
 | Anteprima | C | `#repPreview`, `drawNewPreview()` |
-| 7 distribuzioni | C | `LISTS.dist`, oggi è un menu a tendina |
+| Intestazione "Da Logo e Pallino" | C | `selLabel()`, nomi da `inflect_state` (`selNames`) |
+| 7 distribuzioni | C | Riquadri `distTiles()` con `DIST_GLYPH`, anche nella modifica |
+| Torna al Cloner | C | `rep-back`, visibile dopo Nuovo |
 | Colonne, Righe (o Quantità, Livelli) | C | `renderRepeatNew()` |
-| Sorgenti, Nasce, In primo piano, 3D, Nascondi | C | `N.pick`, `N.place`, `N.front`, `N.threeD`, `N.hide` |
+| Sorgenti, Posizione, Davanti, 3D, Nascondi | C | `N.pick`, `N.place`, `N.front`, `N.threeD`, `N.hide` |
 | Crea Cloner | C | `rep-create`, `inflect_repeatCreate` |
 
 ## Cloner, modifica
@@ -93,7 +98,8 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 | Elemento | Stato | Collegamento |
 |---|---|---|
 | Nome e riepilogo | C | `#repName`, `#repMeta` |
-| Animazioni, Rileggi, Altro | C | `rep-recipe`, `rep-refresh`, `rep-menu` |
+| Nuovo, Animazioni, Rileggi, Altro | C | `rep-new`, `rep-recipe`, `rep-refresh`, `rep-menu` |
+| Conteggi di Falloff, Comportamenti, Input | C | `#repFallN`, `#repBehN`, `#repSrcN` |
 | Rombo keyframe accanto ai valori | C | `kf()` e `inflect_repeatKey`: vuoto, animato, keyframe al tempo corrente |
 | Distribuzione e parametri | C | `renderRepeatBody()`, `inflect_repeatSet` |
 | Falloff, forma, Dimensione, Morbidezza, Intensità | C | `falloffBlock()`, `rep-add-fall`, `inflect_falloffSet` |
@@ -107,7 +113,9 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 
 | Elemento | Stato | Collegamento |
 |---|---|---|
-| Timeline della comp con marcatori e note | N | Durata e fps arrivano già da `inflect_state`, i tempi delle note da `inflect_notesList`, i marcatori da `renderSync()`. **Manca il tempo corrente:** va aggiunto a `inflect_state`. Clic su un punto = `inflect_noteGo` |
+| Intestazione: comp, note da fare, marcatori | C | `ntHead()` |
+| Ritmo della comp in alto, Rileggi | C | `#ntSvg`, `drawNoteRhythm()`, `analyze` |
+| Timeline della comp con marcatori e note (mockup) | S | Durata e fps arrivano già da `inflect_state`, i tempi delle note da `inflect_notesList`, i marcatori da `renderSync()`. **Manca il tempo corrente:** va aggiunto a `inflect_state`. Clic su un punto = `inflect_noteGo` |
 | Nuova nota, Firma, Comp o Layer selezionato | C | `renderNoteNew()` |
 | Aggiungi al tempo attuale, Cmd+Invio | C | `inflect_noteAdd` |
 | Elenco, Questa comp o Progetto, Mostra le fatte | C | `renderNotes()` |
@@ -116,9 +124,37 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 | Marcatori collegati, comp principale, Usa questa | C | `renderSync()`, `inflect_mainSet` |
 | Aggiungi ovunque, togli, Riallinea tutte, comp nuove | C | `inflect_syncAdd`, `inflect_syncRemove`, `inflect_syncAll`, `inflect_syncAuto` |
 
-## Da progettare ancora
+## Allinea
 
-Allinea, Utility, Analisi e Team seguono le stesse regole, ma non hanno ancora un mockup.
+| Elemento | Stato | Collegamento |
+|---|---|---|
+| Intestazione con i layer e il riferimento | C | `#alSel`, `#alSub` in `applyState()` |
+| Alla composizione, Alla selezione | C | `#alignTarget` |
+| Striscia: allinea, centra, distribuisci | C | `[data-align]`, `[data-dist]` |
+| Muovi come un blocco, Gruppi, Crea gruppo | C | `#alignGroup`, `#groupList`, `group-new` |
+| Punto di ancoraggio, Guide | C | `#anchorGrid`, `#gBody` |
+
+## Utility
+
+| Elemento | Stato | Collegamento |
+|---|---|---|
+| Intestazione con i layer | C | `#utSel`, `#utSub` |
+| Sezioni (cartelle, composizione, righello, copia, sposta, sfalsa, liste) | C | Come prima, stesso ordine |
+
+## Analisi
+
+| Elemento | Stato | Collegamento |
+|---|---|---|
+| Comp, durata, keyframe, Aggiorna | C | `#anComp`, `#anMeta`, `analyze` |
+| Ritmo nel pozzetto in alto | C | `#anSvg`, `drawChart()`, clic = `seek()` |
+| Panoramica in tre colonne, momenti, layer, easing | C | `renderAnalysis()` |
+
+## Team
+
+| Elemento | Stato | Collegamento |
+|---|---|---|
+| Nome, cartella, Cartella…, Altro | C | `#tmName`, `#tmFolder`, `tm-folder`, `tm-menu` |
+| Conteggi delle sezioni | C | `#tmNColors`, `#tmNText`, `#tmNCurves`, `#tmNLists` |
 
 ## Accessibilità, da rispettare nella beta (WCAG 2.1 AA, più la 2.5.8 della 2.2)
 

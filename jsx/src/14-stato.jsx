@@ -14,6 +14,9 @@ function inflect_state(view) {
             o.comp = comp.name;
             o.fps = 1 / comp.frameDuration;
             o.layers = comp.selectedLayers.length;
+            // I nomi dei primi layer selezionati, per le intestazioni del pannello ("Da Logo e Pallino").
+            o.selNames = [];
+            for (var sn = 0; sn < comp.selectedLayers.length && sn < 3; sn++) o.selNames.push(comp.selectedLayers[sn].name);
             var list = inflect_selectedKeyedProps(comp);
             o.props = list.length;
             for (var i = 0; i < list.length; i++) {
