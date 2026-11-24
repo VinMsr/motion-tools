@@ -1,0 +1,226 @@
+Motion Tools 2.35.0
+- Scheda Curve rifatta come nel nuovo disegno:
+  - in alto il nome della curva e su cosa la stai applicando ("Su Posizione di Hero, 1 segmento"), con l'interruttore Dal vivo a destra;
+  - sotto la barra degli strumenti, con Leggi, Copia, Incolla, Annulla e Ripeti a sinistra e Griglia, Velocità e Altro a destra;
+  - il grafico è in un riquadro unico con la striscia dei fotogrammi e il tasto play. Sotto c'è la durata: "600 ms a 25 fps, 16 fotogrammi", con i numeri trascinabili;
+  - "Copia" nei Valori ora si chiama "Copia codice".
+- Versioni precedenti: a ogni aggiornamento si salva la versione in uso, fino alle ultime tre. Dalle Impostazioni, "Torna a una versione precedente…" mostra l'elenco. Dopo un ritorno indietro gli aggiornamenti automatici restano in pausa finché non li riprendi dallo stesso menu o con "Controlla aggiornamenti".
+- Più leggero per After Effects: il controllo continuo della selezione legge il Cloner solo quando la scheda Cloner è aperta, e le code di assestamento solo nella scheda Curve.
+
+Motion Tools 2.34.0
+- In alto, una riga con tre pulsanti: Anima, Disponi, Progetto. Sotto ci sono le schede del gruppo scelto (per esempio Allinea, Utility, Cloner). Ogni gruppo si ricorda l'ultima scheda che hai aperto.
+- Cloner:
+  - nell'intestazione c'è "Nuovo", che crea un altro Cloner dai layer selezionati anche quando il pannello mostra quello di prima;
+  - un Cloner rimasto agganciato (per esempio durante la scelta degli input) non blocca più la creazione di uno nuovo.
+- Movimenti più morbidi e brevi: cambio scheda, apertura delle sezioni, menu, suggerimenti, finestre e avvisi entrano con una dissolvenza leggera. Con "Riduci movimento" attivo nel sistema restano fermi.
+
+Motion Tools 2.33.0
+- Note: in cima c'è il ritmo della comp, lo stesso grafico della scheda Analisi (barre dei keyframe e linea del movimento). Sopra ci sono le note come punti e, se sei nella comp principale, i marcatori collegati. Clic o trascinamento sul grafico spostano l'indicatore del tempo. Aggiorna rilegge la comp.
+- Più fluido: quando trascini un valore, After Effects lo riceve mentre ti muovi (al massimo ogni 60 ms) invece che solo quando ti fermi.
+- Più simile a un pannello di After Effects:
+  - niente menu del browser col tasto destro, niente zoom con Cmd e la rotella, niente pagina che si apre trascinando un file;
+  - barre di scorrimento sottili;
+  - le intestazioni delle sezioni restano in cima mentre scorri;
+  - i pulsanti rispondono al clic con una leggera pressione.
+- Larghezze: il pannello si adatta da circa 240 px a schermo intero. Lo slider Velocità usa tutta la larghezza, e nei pannelli molto larghi le righe non si allungano fino al bordo.
+- Note: i grafici non hanno più i punti bianchi sui picchi, che si confondevano con le note.
+
+Motion Tools 2.32.0
+- Nuova grafica. Le schede sono divise in tre gruppi, Anima, Disponi e Progetto: dal nome in alto a sinistra scegli il gruppo e accanto vedi le sue schede con il nome. Il rombo azzurro segna la scheda aperta.
+- Un solo colore d'accento, l'azzurro, per selezione, keyframe, curva e azione principale. I valori che si trascinano sono bianchi con una sottolineatura tratteggiata. Testo in Geist, incluso nel pannello.
+- Controlli più grandi e facili da cliccare (24 px) e contrasti più alti per tutto il testo.
+- Scheda Curve: "Leggi" ha il nome scritto, Dal vivo è un interruttore. Incolla da testo, Maniglie automatiche e Inverti sono nel menu con i tre puntini.
+- Scheda Testo: i preset sono un elenco, ognuno con un'anteprima ferma a metà animazione. Passando sopra con il mouse l'anteprima si muove.
+- Impostazioni (icona in alto a destra): controlla aggiornamenti, scegli da dove arrivano, torna alla versione precedente.
+- Aggiornamenti da GitHub: se in Impostazioni c'è un repository, il pannello controlla da solo le nuove versioni, le scarica, verifica il file e le installa. All'apertura si ricarica da solo; a pannello aperto compare un avviso con Ricarica. Prima di installare salva la versione in uso, per tornarci con un clic. Senza repository resta il controllo nella cartella condivisa.
+
+Motion Tools 2.30.0
+- Curve dal vivo: con il fulmine acceso nella barra della scheda Curve, ogni modifica della curva va subito sui keyframe selezionati, senza premere Applica. Vale per il trascinamento di punti e maniglie, per i campi numerici, per Liscia e Inverti e per i generatori. Le richieste si fondono: After Effects riceve sempre l'ultima versione. Tutto il gesto è un passo solo per Cmd+Z dal pannello.
+- Trascinamento più fluido: il grafico si ridisegna una volta per fotogramma, la griglia solo quando cambia la vista, e il profilo di velocità usa meno campioni mentre trascini.
+- Applica più veloce: il controllo con i valori di After Effects usa meno campioni, non si fa durante il dal vivo, e l'ordine degli assi di Orientation si riusa.
+- Genera: nuovo Overshoot (supera una volta e torna) con Quanto supera, Arrivo e Partenza. Molla ora si chiama Elastico. Con il dal vivo acceso i cursori cambiano i keyframe mentre li muovi.
+
+Motion Tools 2.29.1
+- Copia e incolla della curva tra keyframe: dopo Incolla il grafico mostra la curva appena messa sui keyframe. Prima restava quella letta prima, e sembrava che l'incolla non avesse fatto niente.
+- Nelle schede Curve e Libreria, con il pannello attivo, Cmd+C copia la curva dei keyframe selezionati e Cmd+V la incolla sui keyframe selezionati. Nei campi di testo Cmd+C e Cmd+V restano quelli normali.
+
+Motion Tools 2.29.0
+- Lettura automatica nella scheda Curve: ora legge solo quando selezioni un segmento per proprietà (due keyframe vicini). Con più keyframe selezionati leggeva una curva multi punto, e applicandola si aggiungevano keyframe in ogni segmento.
+- Slider della velocità: tutto a sinistra la curva diventa lineare (velocità costante), al centro resta quella di partenza, tutto a destra il centro è il più rapido possibile. Niente più -60% da ripetere più volte. Aumentando la velocità su maniglie ripide la curva ora accelera: prima le maniglie venivano schiacciate e diventava piatta. Lo slider non crea keyframe.
+- Curve, barra in alto: Copia curva dai keyframe selezionati e Incolla sui keyframe selezionati, per portare un easing da un'animazione all'altra senza toccare la curva aperta nel pannello. L'icona { } è l'incolla da testo.
+- Pannello stretto: nella barra delle curve il nome va su una riga e le icone sotto, invece di uscire dal bordo.
+
+Motion Tools 2.28.1
+- Curve, slider della velocità: funziona anche sui tracciati (maschere e forme). Prima i keyframe dei tracciati venivano saltati e lo slider diceva di selezionare due keyframe. La velocità si misura su After Effects, come per l'applicazione delle curve.
+- Slider della velocità su Orientation: la velocità si calcola sull'angolo dell'arco, non sulla distanza tra i tre numeri.
+- Dopo ogni modifica con lo slider, nella scheda Curve il grafico mostra subito la curva nuova dei keyframe.
+
+Motion Tools 2.28.0
+- Guide: nella scheda Allinea, "Copia" prende le guide della composizione aperta e "Incolla" le mette in un'altra. Se le due composizioni hanno misure diverse, "In proporzione" le adatta. Le guide già presenti non si duplicano.
+- Scheda Curve: quando selezioni dei keyframe nella timeline, il pannello legge da solo la loro curva. Non lo fa subito dopo un'applicazione dal pannello né mentre trascini nel grafico. Per farlo, nella scheda Curve il pannello controlla la selezione una volta al secondo anche con il mouse fuori dal pannello.
+- Tracciati (maschere e forme): Leggi dai keyframe funziona anche sui punti di un tracciato. Le curve, anche multi punto con rimbalzi, si applicano ai tracciati: i keyframe intermedi spostano i punti al punto giusto e la velocità si misura su After Effects stesso, perché la sua unità per i tracciati non è documentata.
+
+Motion Tools 2.27.3
+- Curve su Orientation dei layer 3D: After Effects la interpola come una rotazione lungo l'arco più corto, non numero per numero come una posizione. Il plugin la trattava come una posizione, quindi i keyframe intermedi e le velocità erano sbagliati (sulla tua curva, scarto del 28,7%). Ora i keyframe intermedi stanno al punto giusto dell'arco (anche oltre la fine, per i rimbalzi) e la velocità è l'angolo in gradi al secondo. L'ordine degli assi lo ricava da After Effects stesso.
+- Anche Leggi dai keyframe legge Orientation lungo l'arco.
+
+Motion Tools 2.27.2
+- Curve multi punto: dopo l'applicazione il plugin legge da After Effects i valori veri dei keyframe e dell'animazione. Se un keyframe intermedio ha un valore diverso da quello della curva (per esempio uguale a quello finale), lo rimette a posto con setValueAtKey e te lo dice.
+- Se l'animazione in After Effects si scosta dalla curva di più del 3%, compare un avviso con la proprietà e il punto. Un clic copia i dettagli (curva e misure) da incollare in chat.
+
+Motion Tools 2.27.1
+- Curve multi punto (rimbalzi, cariche, curve incollate da Motion Lab): i valori tra un keyframe e l'altro ora seguono la curva. After Effects teneva i keyframe "continui" o "auto bezier", che hanno la stessa velocità in entrata e in uscita, e appiattiva le maniglie spezzate. Ora il plugin toglie continuità e auto bezier prima di impostare le velocità. In un test con After Effects simulato lo scarto massimo passa da 13 a meno di 0,5 su 100.
+- Su Posizione, con una curva multi punto il percorso resta dritto anche ai due keyframe estremi, così il rimbalzo va avanti e indietro sulla stessa linea. Con due soli keyframe il tuo percorso non cambia.
+- Se un punto della curva cade sullo stesso frame di un altro e viene saltato, il messaggio dopo l'applicazione lo dice.
+
+Motion Tools 2.27.0
+- Curve: nuovo pulsante "Incolla curva" nella barra della scheda Curve. Si apre un riquadro di testo: incolli con Cmd+V, premi Importa (o Cmd+Invio) e scegli se mettere le curve in Le mie curve, Brand o Progetto. Gli appunti non vengono letti da soli.
+- Formati accettati: una curva (name, group, notes e points con t, v, hi, ho, broken), una libreria con "curves" come i file .inflect.json, un elenco di curve, oppure quattro numeri x1, y1, x2, y2 (anche dentro cubic-bezier(...)).
+- I valori in mezzo alla curva possono uscire da 0..1 (rimbalzi e cariche) e le maniglie spezzate restano spezzate. Ogni curva passa da sanitize e makeCurve. Se l'id esiste già, la curva si aggiorna invece di duplicarsi.
+- Se il testo non va bene, il riquadro dice in italiano cosa manca: per esempio il punto e la maniglia senza valori, i tempi che non crescono o una curva che non arriva a v 1.
+- Cmd+V, Cmd+C, Cmd+X e Cmd+A restano al pannello, così funzionano nei campi di testo invece di finire ad After Effects.
+
+Motion Tools 2.26.1
+- Falloff con Cloner 3D: in "Agisce su" ci sono anche Rotazione X, Rotazione Y e Posizione Z, oltre a Rotazione Z, Posizione X e Y, Scala, Opacità e Colore. Le copie dentro il falloff si ribaltano, girano o vengono verso la camera.
+
+Motion Tools 2.26.0
+- Pannello e After Effects sempre allineati: prima di ogni comando il pannello controlla che After Effects stia usando lo stesso host.jsx e, se ne ha in memoria uno vecchio, lo ricarica dal disco. Era la causa di "Parametro sconosciuto: I1 Scala" e dell'avviso "Undo group mismatch" che restava anche dopo la correzione.
+- Il Cloner crea subito i controlli di scala e colore di ogni input.
+- Selettore di colore nel pannello: quadrato per saturazione e luminosità, barra della tinta, codice esadecimale. Sostituisce il selettore di After Effects, che chiamato dal pannello non rispondeva.
+- Falloff mai visibili nell'export: sono livelli guida e di regolazione, quindi il contorno non viene renderizzato nemmeno con le impostazioni "Current Settings". Per vederli mentre li posizioni c'è "Contorno visibile". I falloff già fatti si aggiornano alla prima modifica.
+- Falloff con Cloner 3D: rotazione X, Y e Z e Profondità lungo Z. In 2D c'è la rotazione. Si animano con il rombo.
+
+Motion Tools 2.25.0
+- Cloner, Input: ogni input ha la sua Scala e, se è una forma o un testo, il suo Colore. Si animano con il rombo come gli altri parametri e seguono il loro input quando sposti, sostituisci o togli qualcosa dalla lista. Con la misura Distanza lo spazio tra le copie si adatta alla scala nuova.
+- Colori: il campione apre un riquadro con il codice del colore, il selettore di After Effects (con il contagocce), i colori usati di recente e le palette del team. Prima si potevano usare solo le palette, perché il selettore di colore del browser dentro After Effects spesso non si apre.
+- Cloner, Colori e testi: i colori della lista si cambiano o si tolgono con un clic, e con + se ne aggiunge uno qualsiasi.
+- Corretto l'avviso di After Effects "Undo group mismatch, will attempt to fix", che a volte annullava da solo qualche passo. Alcune azioni (Collega falloff, Centra nella composizione, Aggiorna copie) aprivano un gruppo di annullamento dentro un altro. Ora ce n'è sempre uno solo per volta, e un test controlla tutte le azioni del pannello.
+- Cmd+Z dal pannello: se l'ultimo gesto del pannello è di più di 30 secondi fa, annulla un passo solo, come Cmd+Z in After Effects. Così non torna indietro oltre le modifiche fatte a mano nel frattempo.
+- Il pannello si ricarica da solo solo quando su disco c'è davvero una versione più nuova.
+
+Motion Tools 2.24.0
+- Cloner, sezione Input (prima Sorgenti): come la lista Input Shapes di Cavalry. Aggiungi input scegliendo i layer nella composizione (il pannello resta sul Cloner mentre selezioni), spostali su e giù, sostituiscili con un altro layer o toglili. Un clic sul nome seleziona il layer da modificare. Accanto a ogni input c'è quante copie lo usano.
+- Cloner, come le copie scelgono l'input: A turno, Casuale, Avanti e indietro, A blocchi (il primo input per le prime copie, poi il secondo...) e Solo uno.
+- Aggiornamenti: il pannello ora si carica sempre dai file su disco, senza le copie vecchie che CEP teneva in memoria. Dopo Controlla aggiornamenti il pannello si ricarica da solo con la versione nuova, senza chiudere After Effects. Questa volta, per passare al nuovo sistema, chiudi After Effects e riaprilo un'ultima volta.
+- Il numero di versione mostrato è quello del codice che sta girando davvero, non quello scritto nel manifest.
+
+Motion Tools 2.23.0
+- Falloff come un'area: dentro la forma l'effetto è pieno, fuori sfuma fino a sparire. La fascia della sfumatura si regola con "Sfumatura" (prima "Morbidezza"), in % della dimensione, e nella composizione si vede come una seconda linea più sottile. Così anche una copia appena fuori riceve un po' di effetto.
+- Falloff nuovo: nasce al centro delle copie e già della misura giusta (circa un terzo del Cloner), non più un cerchio fisso di 500 px.
+- Scala dal falloff: con "Mantieni le distanze" (attivo di base) le copie che crescono spingono via le vicine e non si toccano più. Funziona anche quando si rimpiccioliscono.
+- Colore dal falloff: si mescola con la copia senza spegnere le altre. Prima il peso finiva sull'opacità del Riempimento, che in After Effects agisce su tutto il layer, quindi le copie fuori dal falloff sparivano. Ora usa l'Opacità effetto delle Opzioni di composito.
+- I Cloner già fatti si aggiornano da soli alla prima modifica.
+
+Motion Tools 2.22.0
+- Falloff: quando lo colleghi a Scala, Opacità, Colore o altro, il plugin chiede ad After Effects cosa ha calcolato davvero sulle copie. Ti dice quante copie cambiano, oppure che nessuna copia è dentro il falloff, oppure l'errore esatto dell'espressione (si copia con un clic).
+- Falloff: accanto a ogni collegamento c'è il pulsante di verifica, da usare dopo aver spostato o ridimensionato il falloff.
+- Falloff su Scala: ora parte da +100, quindi al centro del falloff le copie diventano il doppio e restano dove sono, come in Cavalry. Con un valore negativo si rimpiccioliscono.
+
+Motion Tools 2.21.1
+- Cloner: la schermata di creazione si aggiorna subito quando cambi Distribuzione, Quantità o 3D. Prima un menu appena usato restava "attivo" e bloccava il ridisegno, quindi la schermata mostrava ancora le voci vecchie finché non cambiavi scheda. Stessa correzione per l'ispettore delle curve, il righello e le note.
+- Curve, sezione Genera: Molla, Rimbalzo e Anticipo non sono più uno sopra l'altro. Uno stile pensato per i pulsantini dei colori finiva anche su queste schede e le stringeva a 22 pixel.
+
+Motion Tools 2.21.0
+- Codice sempre aggiornato: all'apertura il pannello ricarica host.jsx dal disco. CEP tiene in memoria lo script finché After Effects resta aperto, quindi prima un aggiornamento poteva continuare a usare il codice vecchio anche con il numero di versione nuovo.
+- Pannello e After Effects hanno lo stesso numero di build: se non coincidono, il pannello te lo dice. Il numero è anche negli errori copiati.
+- L'aggiornamento dal NAS e gli installer svuotano la cache dei pannelli di CEP per Motion Tools. Dopo un aggiornamento chiudi After Effects del tutto e riaprilo.
+- Curve: Invio non applica più la curva (prima, con il pannello attivo, Invio premuto per After Effects applicava la curva e aggiungeva keyframe). Cmd+Z e Canc agiscono sulla curva solo dopo un clic nel grafico; altrimenti Cmd+Z annulla in After Effects.
+- Cloner: la coda delle modifiche non si blocca più se un passaggio fallisce.
+
+Motion Tools 2.20.0
+- Cloner: l'editor si ridisegna sempre dopo una tua modifica dal pannello. Un trascinamento rilasciato fuori dal pannello (per esempio sopra la comp) restava "aperto" e bloccava ogni aggiornamento: ora si chiude da solo quando il mouse esce o il pannello perde il fuoco.
+- Cloner: se la lettura da After Effects non riesce, il pannello mostra l'errore (si copia con un clic) invece di restare fermo in silenzio.
+- Cloner: pulsante "Rileggi" nell'intestazione, per rileggere tutto da After Effects.
+- Cloner: i layer originali si ritrovano anche nelle versioni di After Effects precedenti alla 2022 (layerByID esiste dalla 22.0).
+- Tolto l'assestamento dalla scheda Curve.
+
+Motion Tools 2.19.0
+- Cloner: l'editor si aggiorna a ogni scelta (Tipo, Misura, Direzione...) senza cambiare scheda. Un ridisegno saltato mentre un campo era attivo restava perso; ora aspetta e parte appena può. Si aspetta solo mentre scrivi davvero in un campo.
+- Assestamento senza rimbalzo. Fine: A -> B diventa A -> C -> B. C sta dove c'era B, a una quota prima dell'arrivo (per esempio il 90% del movimento); B va avanti dei frame scelti e l'ultimo tratto scivola e si posa. Inizio: A va indietro e il primo tratto parte piano.
+- In C la velocità che arriva e quella che riparte sono uguali: il movimento non si ferma e non scatta. La partenza della tua curva resta com'era.
+- Se cancelli il keyframe in mezzo resta un normale A -> B con il valore giusto. "Togli" rimette keyframe e curve com'erano. Senza spazio, i keyframe vicini si spostano insieme.
+
+Motion Tools 2.17.0
+- Cloner, l'editor restava fisso dopo aver cambiato Tipo (Griglia, Lineare...): una rilettura chiesta mentre un'altra era in corso andava persa. Ora si mette in coda, e l'editor si rilegge da solo ogni poco mentre usi il pannello.
+- Cloner, Colonne, Righe e Quantità animate: le copie si creano per il keyframe più alto e quelle in più si nascondono quando il valore scende, come in Cavalry. Vale anche per i keyframe messi dai Controlli effetti.
+- Falloff, "Agisce su": nel blocco del falloff scegli cosa cambia nelle copie dentro la sua area: Scala, Opacità, Colore, Rotazione, Posizione (Z in 3D). Ogni voce ha la sua quantità e si toglie con la x.
+- Colore: nuova destinazione per falloff e comportamenti. Le copie prendono il colore scelto, anche dalle palette del team; con più colori si mescolano.
+- Falloff, dimensione collegata: cambi la larghezza e l'altezza segue in proporzione. Il lucchetto le scollega.
+- Cmd+Z con il pannello attivo (fuori dalle Curve) annulla in After Effects l'ultimo gesto intero: un trascinamento si annulla in un colpo, non un pezzetto alla volta. Cmd+Maiusc+Z ripete. Poi il pannello rilegge i valori.
+- Cloner più fluido: trascinando un valore, il pannello manda ad After Effects solo l'ultimo valore in attesa invece di tutti i passaggi.
+- Cloner, sezioni in un ordine più chiaro: Distribuzione, Falloff, Colori e testi, Comportamenti, poi Trasforma e Sorgenti (chiuse).
+
+Motion Tools 2.16.0
+- Cloner, copie spostate: la posizione di partenza delle copie si leggeva prima di agganciarle al controllo, quindi finivano spostate di tutta la posizione del null (verso l'angolo in alto a sinistra). Ora le copie si dispongono attorno al null. I Cloner esistenti si correggono da soli quando li selezioni; se li avevi centrati, restano centrati.
+- Cloner, il null è piccolo e sta sul punto attorno a cui si dispongono le copie.
+- Cloner, nuova misura "Distanza": lo spazio tra i bordi delle copie, calcolato sulla loro dimensione vera (con la scala). È la misura di partenza per Lineare e Griglia. In Lineare scegli Orizzontale o Verticale. "Rimisura" rilegge la dimensione se cambi le sorgenti.
+- Cloner, misure reali: il pannello mostra la distanza da centro a centro e tra i bordi in pixel della composizione, come la vedi.
+- Cloner, da Griglia a Lineare il passo verticale si azzera: niente più diagonale.
+- Cloner, con "Allinea: Centro" il centro del contenuto si misura una volta: testi e forme animati non fanno più spostare le copie nel tempo.
+- Pannello: dopo un clic su un menu o un pulsante del Cloner l'editor si aggiorna subito (prima restava sui campi vecchi finché il controllo restava attivo).
+
+Motion Tools 2.15.5
+- Più fluido. Le anteprime dei preset di testo si animano solo con il mouse sopra (le altre mostrano un fotogramma fermo), a 30 fotogrammi al secondo, e si fermano quando lavori in After Effects.
+- Il pannello ridisegna lo stato solo quando cambia qualcosa.
+- Note: le note di tutto il progetto si rileggono ogni 10 secondi invece di 2,5; la composizione principale si ricorda invece di cercarla ogni volta in tutto il progetto.
+- Testo dal vivo: le modifiche arrivano in After Effects quando smetti di cambiare (450 ms), non a ogni piccolo passo.
+
+Motion Tools 2.15.4
+- Precomponi e ritaglia: niente più precomp giganti. Il contenuto si misura senza far calcolare gli effetti (prima ogni misura era un render), con meno campioni ma sempre sui keyframe. Gli effetti allargano il riquadro al massimo di 300 px per lato.
+- Se la precomp verrebbe troppo grande (oltre 3 volte la composizione, minimo 4096 px), il plugin si ferma prima di toccare qualcosa e ti dice quanto sarebbe grande.
+
+Motion Tools 2.15.3
+- Testo: tasto destro su un preset tuo o del team, "Rinomina…". Se è aperto nell'editor, il nome cambia anche lì.
+
+Motion Tools 2.15.2
+- Testo: selezionando un layer, il pannello legge anche l'animatore MT Colore e apre la fase Colore con i suoi valori. Funziona anche se il layer ha solo il colore, o se MT Colore l'ha creato un altro script (legge colore e unità dal layer).
+- Le fasi in uso hanno un pallino (Entrata •, Colore •), così vedi subito cosa usa il layer o il preset.
+- Si può applicare un preset con il solo colore.
+
+Motion Tools 2.15.1
+- Testo: nuova fase "Colore" nell'editor, accanto a Entrata e Uscita. Gestisce l'animatore MT Colore: lettere o parole, tempi, Riparte, Tra parole, curva, e se il testo parte dal colore o ci arriva.
+- Colori: ogni campo colore ha un pulsante con le palette del team.
+- Preset: "Aggiorna" salva subito le modifiche nel preset da cui sei partito, nei tuoi o nel team, anche se l'hai riaperto da un layer. "Salva come nuovo" ne crea una copia.
+- Il pannello parla con After Effects solo mentre lo usi. Quando lavori nella comp non manda più chiamate, così lo strumento Testo seleziona di nuovo normalmente. Tornando sul pannello si aggiorna subito.
+
+Motion Tools 2.15.0
+- Testo, colore: "Cambia colore" in Parte da / Arriva a. Le lettere partono dal colore scelto (o ci arrivano in uscita).
+- Testo, "Riparte": animando per lettere lo sfalsamento ricomincia a ogni parola o riga; "Tra parole" aggiunge un ritardo tra una parola e l'altra.
+- Testo, blocco colore nei preset ("fill"): un animatore a parte, "MT Colore", con la sua unità. Così le parole si muovono intere e il colore scorre lettera per lettera, con ritardo parola x wordStg + lettera x stg. L'anteprima del pannello lo mostra.
+
+Motion Tools 2.14.4
+- Tolto l'allineamento 3D e la sezione Profondità: Allinea e Distribuisci tornano come prima della 2.14.0.
+- Restano le correzioni delle versioni 2.13 e 2.14: curve, messaggio di aggiornamento, pannello più leggero per After Effects, NAS che non blocca.
+
+Motion Tools 2.14.3
+- Corretto "After Effects non ha risposto" su allineamento 3D e Cartelle NEW e OLD: il motore di script di After Effects perdeva il risultato con un costrutto (try/finally) che ora non uso più.
+- Allineamento 3D per tutta l'animazione: si misura a ogni keyframe di posizione e si corregge ciascuno al suo tempo. Se la camera si muove, i layer 3D ricevono keyframe di posizione ai tempi della camera, così restano allineati anche durante il movimento.
+- Se uno script fallisce, il pannello mostra il messaggio vero con il nome della funzione.
+
+Motion Tools 2.14.2
+- Più leggero per After Effects. Il pannello chiede lo stato ogni mezzo secondo solo mentre lo usi; quando lavori in After Effects lo fa ogni 3 secondi.
+- NAS: libreria di team e aggiornamenti si controllano a parte, senza bloccare After Effects. Se il NAS non risponde entro pochi secondi il pannello lo dice e riprova da solo. Il controllo degli aggiornamenti all'apertura parte dopo 8 secondi.
+
+Motion Tools 2.14.1
+- Allineamento 3D rifatto. I pulsanti di Allinea e Distribuisci funzionano anche con i layer 3D, come li vedi dalla camera: i bordi sono quelli dell'inquadratura, anche con layer a profondità diverse. Il layer si sposta parallelo alla camera, quindi la sua distanza non cambia.
+- Nuova sezione Profondità: Davanti, Centro, Dietro e Distribuisci, rispetto alla selezione o al piano della comp. Si misura lungo la direzione in cui guarda la camera. Con una distanza in pixel, distribuisce a passo fisso.
+- Tolta la griglia X, Y, Z della 2.14.0.
+
+Motion Tools 2.13.2
+- Cartelle NEW e OLD: lo spostamento non blocca più After Effects e, se qualcosa va storto, mostra il motivo preciso invece di "non ha risposto".
+- Curve: corretto l'errore "Impossibile chiamare setTemporalEaseAtKey ... matrice di valori" applicando una curva. Ora le liste di easing hanno il numero di voci che After Effects richiede sul keyframe.
+- Allinea: "Centra nella composizione" rispetta "Mantieni le distanze" (prima centrava ogni layer da solo). La selezione resta attiva dopo l'allineamento, quindi puoi riallineare subito.
+- Icona "Centra nella composizione": croce con quadrato al centro.
+- Velocità: corretto l'errore "impossibile chiamare setTemporalEaseAtKey". I valori sono controllati e l'errore indica il keyframe e i valori usati.
+- Errori: un clic sul messaggio rosso lo copia, con la versione davanti. Basta incollarlo in chat.
+- Marcatori collegati: l'aggiunta automatica alle comp nuove è spenta di default (interruttore nella scheda Note).
+- Testo: "Salva come preset" in alto. Con un'animazione fatta a mano la legge e apre il salvataggio.
+- Utility: sezione "Cartelle NEW e OLD" per spostare nella cartella nuova gli elementi della comp attiva che stanno nella vecchia.
+- Analisi: ora conta anche i keyframe e il movimento dentro le precomp, riportati al tempo della comp principale (fino a 4 livelli di annidamento).
+- Testo: "Leggi l’animazione di questo layer" legge i keyframe messi a mano su un layer di testo e li apre nell’editor da salvare (durata, curva, partenza; lo sfasamento tra lettere è stimato).
+- Codice: host.jsx ora si compila da jsx/src con tools/build.js. Test in tests/ (node tests/run.js).
+- Curve: le maniglie si prendono anche con un clic di qualche pixel fuori; un clic vicino a una maniglia non deseleziona più i punti.
+- Testo: cartelle nei preset personali. Crea una cartella con "+ Cartella" e trascinaci dentro i preset (trascinando fuori dalla cartella tornano nella lista).
+- Clic destro su una cartella: rinomina o elimina (i preset restano).
+- Schede con icone: con il pannello stretto restano le icone, la rotella le fa scorrere.
+- Allinea come gruppo: i layer si allineano insieme mantenendo le distanze. Gruppi salvati da riselezionare.

@@ -1,0 +1,75 @@
+# Pubblica una release di Motion Tools quando su main arriva un numero di versione nuovo.
+#
+# Funziona cosi': Claude prepara la versione su un ramo e apre una pull request. Quando Vin fa il merge,
+# questa automazione legge la versione da CSXS/manifest.xml. Se la release vX.Y.Z non esiste ancora,
+# fa la build, lancia i controlli, crea gli zip e pubblica la release con le novita' prese da NOVITA.txt.
+# I pannelli installati la trovano da soli entro mezz'ora.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Versione
+        id: v
+        run: |
+          VER=$(grep -o 'ExtensionBundleVersion="[^"]*"' CSXS/manifest.xml | cut -d'"' -f2)
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VER" >/dev/null 2>&1; then
+            echo "La release v$VER esiste gia': niente da fare."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Build e controlli
+        if: steps.v.outputs.skip != 'true'
+        run: |
+          node tools/build.js
+          npm install --silent --prefix tools/checks
+          node tools/checks/es3-check.js jsx/host.jsx
+          node tests/run.js
+
+      - name: Pacchetti
+        if: steps.v.outputs.skip != 'true'
+        run: OUT="$PWD/dist" bash tools/pack.sh
+
+      - name: Novita'
+        if: steps.v.outputs.skip != 'true'
+        run: |
+          # Il primo blocco di NOVITA.txt, senza la riga del titolo.
+          awk 'NR==1{next} /^Motion Tools [0-9]/{exit} {print}' NOVITA.txt > dist/note.md
+          printf '\n## Installazione\n\n**Mac:** nel Terminale\n`curl -fsSL https://raw.githubusercontent.com/%s/main/install.sh | bash`\n\n**Windows:** in PowerShell\n`irm https://raw.githubusercontent.com/%s/main/install.ps1 | iex`\n' "$GITHUB_REPOSITORY" "$GITHUB_REPOSITORY" >> dist/note.md
+          sed -i '1s/^/## Novità\n\n/' dist/note.md
+
+      - name: Pubblica la release
+        if: steps.v.outputs.skip != 'true'
+        run: |
+          VER=${{ steps.v.outputs.version }}
+          gh release create "v$VER" \
+            "dist/github/motion-tools-$VER.zip" \
+            "dist/github/motion-tools-$VER.zip.sha256" \
+            "dist/Motion Tools.zip" \
+            --title "Motion Tools $VER" \
+            --notes-file dist/note.md \
+            --target "$GITHUB_SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
