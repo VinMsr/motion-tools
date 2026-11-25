@@ -1820,30 +1820,24 @@
       svg.innerHTML = out; cap.innerHTML = 'Seleziona uno o più layer nella comp'; return;
     }
     const act = AL.hover, T = act ? alTargets(act) : null;
-    if (T) {
-      L.forEach((b, i) => {
-        const [dx, dy] = T[i];
-        if (Math.abs(dx) + Math.abs(dy) < 0.5) return;
-        out += `<rect class="alghost" x="${X(b.l + dx)}" y="${Y(b.t + dy)}" width="${Math.max(2, (b.r - b.l) * k)}" height="${Math.max(2, (b.b - b.t) * k)}" rx="2"/>`;
-        out += `<path class="alpath" d="M${X((b.l + b.r) / 2)} ${Y((b.t + b.b) / 2)}L${X((b.l + b.r) / 2 + dx)} ${Y((b.t + b.b) / 2 + dy)}"/>`;
-      });
-    }
-    L.forEach((b) => {
+    // Senza anteprima: i layer pieni con il nome. Con l'anteprima: tratteggiati dove sono ora, in azzurro dove andranno.
+    const name = (x, y, w, hh, n) => (w > 34 && hh > 14 ? `<text class="alname${T ? ' on' : ''}" x="${x + 4}" y="${y + 12}">${esc(n).slice(0, Math.floor(w / 6))}</text>` : '');
+    L.forEach((b, i) => {
       const w = Math.max(2, (b.r - b.l) * k), hh = Math.max(2, (b.b - b.t) * k);
-      out += `<rect class="allayer" x="${X(b.l)}" y="${Y(b.t)}" width="${w}" height="${hh}" rx="2"/>`;
-      if (w > 34 && hh > 14) out += `<text class="alname" x="${X(b.l) + 4}" y="${Y(b.t) + 12}">${esc(b.name).slice(0, Math.floor(w / 6))}</text>`;
+      const [dx, dy] = T ? T[i] : [0, 0];
+      if (!T) { out += `<rect class="allayer" x="${X(b.l)}" y="${Y(b.t)}" width="${w}" height="${hh}" rx="2"/>` + name(X(b.l), Y(b.t), w, hh, b.name); return; }
+      out += `<rect class="alnow" x="${X(b.l)}" y="${Y(b.t)}" width="${w}" height="${hh}" rx="2"/>`;
+      out += `<rect class="alghost" x="${X(b.l + dx)}" y="${Y(b.t + dy)}" width="${w}" height="${hh}" rx="2"/>` + name(X(b.l + dx), Y(b.t + dy), w, hh, b.name);
     });
     if (T && alignTarget === 'selection' && act !== 'center' && !act.startsWith('d')) {
       const U = { l: Math.min(...L.map((b) => b.l)), t: Math.min(...L.map((b) => b.t)), r: Math.max(...L.map((b) => b.r)), b: Math.max(...L.map((b) => b.b)) };
       out += `<rect class="alsel" x="${X(U.l)}" y="${Y(U.t)}" width="${(U.r - U.l) * k}" height="${(U.b - U.t) * k}"/>`;
     }
     svg.innerHTML = out;
-    const name = AL_NAMES[act] || '';
-    const nn = L.length === 1 ? 'il layer' : `${L.length} layer`;
-    cap.textContent = !act ? (L.length === 1 ? 'Passa sopra un pulsante per vedere dove va il layer' : 'Passa sopra un pulsante per vedere dove vanno i layer')
-      : !T ? `${name}: ogni gruppo salvato si muove come un blocco`
-      : act === 'dh' || act === 'dv' ? `${name}, stessa distanza tra i centri`
-      : `${name}, ${nn} ${alignTarget === 'selection' && act !== 'center' ? 'tra loro' : 'nella comp'}`;
+    const label = AL_NAMES[act] || '';
+    if (!act) cap.textContent = L.length === 1 ? 'Passa sopra un pulsante per vedere dove va il layer' : 'Passa sopra un pulsante per vedere dove vanno i layer';
+    else if (!T) cap.textContent = `${label}: ogni gruppo salvato si muove come un blocco`;
+    else cap.innerHTML = `<span class="alact">${esc(label)}</span><span class="alkey"><i class="know"></i>ora</span><span class="alkey"><i class="kafter"></i>dopo il clic</span>`;
   }
   const AL_NAMES = { left: 'A sinistra', hcenter: 'Al centro in orizzontale', right: 'A destra', top: 'In alto', vcenter: 'Al centro in verticale', bottom: 'In basso', center: 'Al centro della comp', dh: 'Distribuisci in orizzontale', dv: 'Distribuisci in verticale' };
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

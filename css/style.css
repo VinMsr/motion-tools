@@ -1264,3 +1264,12 @@ details[open] > .sec-body { animation: mtIn .16s cubic-bezier(.2,0,0,1); }
   .view-align .tools .vsep { margin: 0; }
   .view-align .tools .tbtn svg { width: 16px; height: 16px; }
 }
+.alwell .alnow { fill: none; stroke: rgba(236,236,239,.35); stroke-dasharray: 3 3; }
+.alwell .alghost { fill: rgba(74,163,255,.18); }
+.alwell .alname.on { fill: var(--strong); }
+.alwell .wellcap { display: flex; align-items: center; gap: 12px; white-space: nowrap; overflow: hidden; }
+.alwell .alact { color: var(--strong); }
+.alkey { display: inline-flex; align-items: center; gap: 4px; }
+.alkey i { width: 10px; height: 8px; border-radius: 2px; box-sizing: border-box; }
+.alkey .know { border: 1px dashed rgba(236,236,239,.5); }
+.alkey .kafter { background: rgba(74,163,255,.3); border: 1px solid var(--accent); }

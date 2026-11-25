@@ -1,6 +1,6 @@
 Motion Tools 2.37.0
 - Allinea:
-  - in alto c'è la comp in piccolo con i layer selezionati. Passando sopra un pulsante, in azzurro vedi dove andranno prima di cliccare;
+  - in alto c'è la comp in piccolo con i layer selezionati. Passando sopra un pulsante, i layer restano tratteggiati dove sono ora e in azzurro vedi dove andranno, prima di cliccare;
   - "Alla comp" o "Alla selezione" e l'interruttore Come blocco stanno sopra gli strumenti;
   - Distribuisci si spegne quando hai meno di tre layer;
   - i gruppi sono pillole con il numero di layer, e "Salva la selezione" ne crea uno nuovo.

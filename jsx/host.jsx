@@ -1,4 +1,4 @@
-var MT_BUILD = "2.37.0-a002c6e4";
+var MT_BUILD = "2.37.0-b82c1c2d";
 function inflect_build() { return MT_BUILD; }
 /*
  * Curve \u00b7 host.jsx
