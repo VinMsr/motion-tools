@@ -296,3 +296,21 @@ function inflect_distribute(axis) {
     return inflect_ok({ layers: items.length, notes: notes });
 }
 
+
+/**
+ * Solo lettura, per l'anteprima della scheda Allinea: misura della comp e riquadri
+ * dei layer selezionati in questo istante (al massimo 40). Non cambia niente nel progetto.
+ */
+function inflect_layoutRead() {
+    try {
+        var comp = inflect_activeComp();
+        if (!comp) return inflect_ok({ comp: null, layers: [] });
+        var layers = inflect_alignLayers(comp), t = comp.time, out = [];
+        for (var i = 0; i < layers.length && i < 40; i++) {
+            var b;
+            try { b = inflect_bounds(layers[i], t); } catch (eB) { continue; }
+            out.push({ name: layers[i].name, l: b.l, t: b.t, r: b.r, b: b.b });
+        }
+        return inflect_ok({ comp: { name: comp.name, w: comp.width, h: comp.height }, layers: out, total: layers.length });
+    } catch (e) { return inflect_err(e); }
+}

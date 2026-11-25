@@ -147,17 +147,19 @@
       <!-- ============================================================ ALLINEA -->
       <section class="view view-align" data-view="align">
         <div class="vhead">
-          <div class="vhead-txt"><strong class="vtitle" id="alSel">Seleziona uno o più layer</strong><span class="vsub" id="alSub">Rispetto alla composizione</span></div>
+          <div class="vhead-txt"><strong class="vtitle" id="alSel">Allinea</strong><span class="vsub" id="alSub">Seleziona uno o più layer</span></div>
         </div>
+        <div class="vwell alwell"><svg id="alSvg" role="img" aria-label="Anteprima della composizione con i layer selezionati"></svg><span class="wellcap" id="alCap"></span></div>
         <div class="secs" id="alignWrap">
-          <details class="sec needs-layers" data-sec="align" open>
-            <summary>Allinea e distribuisci</summary>
-            <div class="sec-body">
-              <div class="seg full" id="alignTarget" role="radiogroup" aria-label="Rispetto a">
-                <button data-target="comp" class="is-on" role="radio" data-tip="Bordi e centro della composizione">Alla composizione</button>
-                <button data-target="selection" role="radio" data-tip="I layer selezionati tra loro">Alla selezione</button>
+          <div class="sec-body flat alctl needs-sel">
+            <div class="alrow">
+              <div class="seg" id="alignTarget" role="radiogroup" aria-label="Rispetto a">
+                <button data-target="comp" class="is-on" role="radio" aria-checked="true" data-tip="Bordi e centro della composizione">Alla comp</button>
+                <button data-target="selection" role="radio" aria-checked="false" data-tip="I layer selezionati tra loro">Alla selezione</button>
               </div>
-              <div class="tools">
+              <label class="livesw alblock" data-tip="I layer si spostano insieme, come un blocco: le distanze tra loro restano. Con Alla selezione, ogni gruppo salvato fa da blocco"><span>Come blocco</span><input type="checkbox" id="alignGroup" role="switch"><i class="switch"></i></label>
+            </div>
+              <div class="tools" role="group" aria-label="Allinea e distribuisci">
                 <button class="tbtn" data-align="left" data-tip="Allinea a sinistra"><svg viewBox="0 0 20 20"><path class="g" d="M3.5 2.5v15"/><rect x="6" y="5" width="10" height="3.5" rx=".75"/><rect x="6" y="11.5" width="6" height="3.5" rx=".75"/></svg></button>
                 <button class="tbtn" data-align="hcenter" data-tip="Centra in orizzontale"><svg viewBox="0 0 20 20"><path class="g" d="M10 2.5v15"/><rect x="4" y="5" width="12" height="3.5" rx=".75"/><rect x="6.5" y="11.5" width="7" height="3.5" rx=".75"/></svg></button>
                 <button class="tbtn" data-align="right" data-tip="Allinea a destra"><svg viewBox="0 0 20 20"><path class="g" d="M16.5 2.5v15"/><rect x="4" y="5" width="10" height="3.5" rx=".75"/><rect x="8" y="11.5" width="6" height="3.5" rx=".75"/></svg></button>
@@ -171,55 +173,49 @@
                 <button class="tbtn" data-dist="h" data-tip="Stessa distanza orizzontale tra i centri (almeno tre layer)"><svg viewBox="0 0 20 20"><path class="g" d="M2.5 3v14M17.5 3v14"/><rect x="5" y="6" width="2.5" height="8" rx=".6"/><rect x="8.75" y="6" width="2.5" height="8" rx=".6"/><rect x="12.5" y="6" width="2.5" height="8" rx=".6"/></svg></button>
                 <button class="tbtn" data-dist="v" data-tip="Stessa distanza verticale tra i centri (almeno tre layer)"><svg viewBox="0 0 20 20"><path class="g" d="M3 2.5h14M3 17.5h14"/><rect x="6" y="5" width="8" height="2.5" rx=".6"/><rect x="6" y="8.75" width="8" height="2.5" rx=".6"/><rect x="6" y="12.5" width="8" height="2.5" rx=".6"/></svg></button>
               </div>
-              <label class="check" data-tip="I layer selezionati si spostano insieme, come un blocco: le distanze tra loro restano uguali. Con Selezione, ogni gruppo salvato fa da blocco"><input type="checkbox" id="alignGroup"><span>Muovi come un blocco, le distanze restano</span></label>
-              <div class="prow">
-                <span class="plabel">Gruppi</span>
-                <span class="groups" id="groupList"></span>
-                <span class="grow"></span>
-                <button class="btn sm ghost" data-act="group-new" data-tip="Salva i layer selezionati come gruppo, per riselezionarli e allinearli come un blocco">Crea gruppo</button>
-              </div>
-            </div>
-          </details>
+          </div>
           <details class="sec needs-layers" data-sec="anchor" open>
             <summary>Punto di ancoraggio</summary>
             <div class="sec-body">
-              <div class="anchorgrid" id="anchorGrid" role="group" aria-label="Posizione del punto di ancoraggio"></div>
+              <div class="alanchor"><div class="anchorgrid" id="anchorGrid" role="group" aria-label="Posizione del punto di ancoraggio"></div><p class="hint">Un clic su un punto e l’ancoraggio di ogni layer va lì. I layer restano fermi.</p></div>
             </div>
+          </details>
+          <details class="sec" data-sec="groups" open>
+            <summary>Gruppi <span class="secn" id="groupN"></span><span class="grow"></span>
+              <button class="btn sm ghost addbtn" data-act="group-new" data-tip="Salva i layer selezionati come gruppo, per riselezionarli e allinearli come un blocco"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg>Salva la selezione</button>
+            </summary>
+            <div class="sec-body"><div class="groups" id="groupList"></div><p class="hint" id="groupHint">Un clic riseleziona il gruppo. Con Come blocco si allinea tutto insieme.</p></div>
           </details>
           <details class="sec" data-sec="guides" open>
             <summary>Guide</summary>
             <div class="sec-body" id="gBody"></div>
           </details>
         </div>
-        <div class="emptystate" id="emptyAlign">
-          <svg viewBox="0 0 40 16" aria-hidden="true"><rect class="d" x="9" y="2" width="22" height="12" rx="1.5"/><circle class="k" cx="20" cy="8" r="2"/></svg>
-          <strong>Seleziona uno o più layer</strong>
-        </div>
       </section>
 
       <!-- ============================================================ UTILITY -->
       <section class="view view-utility" data-view="utility">
         <div class="vhead">
-          <div class="vhead-txt"><strong class="vtitle" id="utSel">Utility</strong><span class="vsub" id="utSub">Righello, composizione, copia e incolla, liste</span></div>
+          <div class="vhead-txt"><strong class="vtitle" id="utSel">Utility</strong><span class="vsub" id="utSub">Seleziona uno o due layer per le misure</span></div>
         </div>
+        <div class="vwell rulerwell"><div class="ruler"><svg id="rulerSvg" role="img" aria-label="Schema delle distanze"></svg></div><span class="wellcap" id="rulerCap"></span></div>
+        <div class="rulerdata" id="rulerData"></div>
         <div class="secs" id="utilWrap">
-          <details class="sec" data-sec="cartelle" open>
-            <summary>Cartelle NEW e OLD</summary>
+          <details class="sec" data-sec="ut-anim" open>
+            <summary>Animazione <span class="secn">dei layer selezionati</span></summary>
             <div class="sec-body">
-              <div class="prow">
-                <span class="plabel">Vecchia</span>
-                <span class="pval"><input id="consOld" type="text" value="OLD" data-tip="Nome della cartella da svuotare"></span>
+              <div class="seg uttabs" id="utTabs" role="tablist" aria-label="Strumenti di animazione">
+                <button role="tab" data-ut="cp">Copia e incolla</button>
+                <button role="tab" data-ut="of">Sposta</button>
+                <button role="tab" data-ut="st">Sfalsa</button>
               </div>
-              <div class="prow">
-                <span class="plabel">Nuova</span>
-                <span class="pval"><input id="consNew" type="text" value="NEW" data-tip="Nome della cartella dove portare gli elementi"></span>
-              </div>
-              <p class="hint">Sposta nella cartella nuova gli elementi usati dalla comp attiva, anche dentro le precomp, che si trovano nella vecchia. Non cancella niente: la vecchia la elimini tu.</p>
-              <div class="btnrow"><button class="btn" data-act="consolida">Sposta gli elementi</button></div>
+              <div class="utpane" data-pane="cp" id="cpBody"></div>
+              <div class="utpane" data-pane="of" id="ofBody"></div>
+              <div class="utpane" data-pane="st" id="stBody"></div>
             </div>
           </details>
-          <details class="sec needs-layers" data-sec="comp" open>
-            <summary>Composizione</summary>
+          <details class="sec needs-layers" data-sec="comp">
+            <summary>Composizione <span class="secn">precomponi, adatta ai layer</span></summary>
             <div class="sec-body">
               <div class="prow">
                 <span class="plabel">Margine</span>
@@ -235,34 +231,25 @@
               </div>
             </div>
           </details>
-          <details class="sec needs-layers" data-sec="ruler" open>
-            <summary>Righello</summary>
-            <div class="sec-body">
-              <div class="ruler"><svg id="rulerSvg" role="img" aria-label="Schema delle distanze"></svg></div>
-              <div class="rulerdata" id="rulerData"></div>
-            </div>
-          </details>
-          <details class="sec" data-sec="copy" open>
-            <summary>Copia e incolla</summary>
-            <div class="sec-body" id="cpBody"></div>
-          </details>
-          <details class="sec" data-sec="offset" open>
-            <summary>Sposta animazione</summary>
-            <div class="sec-body" id="ofBody"></div>
-          </details>
-          <details class="sec" data-sec="stagger" open>
-            <summary>Sfalsa layer</summary>
-            <div class="sec-body" id="stBody"></div>
-          </details>
-          <details class="sec" data-sec="lists" open>
-            <summary>Liste</summary>
+          <details class="sec" data-sec="lists">
+            <summary>Liste <span class="secn">colori, numeri e testi su più layer</span></summary>
             <div class="sec-body" id="liBody"></div>
           </details>
-        </div>
-        <div class="emptystate" id="emptyUtil">
-          <svg viewBox="0 0 40 16" aria-hidden="true"><rect class="k" x="2" y="4" width="8" height="8" rx="1"/><rect class="k" x="30" y="4" width="8" height="8" rx="1"/><path class="d" d="M12 8h16"/></svg>
-          <strong>Seleziona uno o due layer</strong>
-          <span>due per lo spazio tra loro, uno per i bordi</span>
+          <details class="sec" data-sec="cartelle">
+            <summary>Cartelle del progetto <span class="secn">da OLD a NEW</span></summary>
+            <div class="sec-body">
+              <div class="prow">
+                <span class="plabel">Vecchia</span>
+                <span class="pval"><input id="consOld" type="text" value="OLD" data-tip="Nome della cartella da svuotare"></span>
+              </div>
+              <div class="prow">
+                <span class="plabel">Nuova</span>
+                <span class="pval"><input id="consNew" type="text" value="NEW" data-tip="Nome della cartella dove portare gli elementi"></span>
+              </div>
+              <p class="hint">Sposta nella cartella nuova gli elementi usati dalla comp attiva, anche dentro le precomp, che si trovano nella vecchia. Non cancella niente: la vecchia la elimini tu.</p>
+              <div class="btnrow"><button class="btn" data-act="consolida">Sposta gli elementi</button></div>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -342,24 +329,21 @@
         <div class="vwell chart" id="anChart"><svg id="anSvg" role="img" aria-label="Keyframe e movimento nel tempo. Clic per spostare l’indicatore del tempo" data-tip="Clic per spostare l’indicatore del tempo"></svg><div class="chart-tip" id="anTip" hidden></div>
           <div class="legend2 welllegend"><span><i class="lk"></i>Keyframe</span><span><i class="lm"></i>Movimento</span></div>
         </div>
+        <div class="stats anstats" id="anStats"></div>
+        <div class="antodo" id="anTodo" hidden><div class="antodo-txt"><strong id="anTodoT"></strong><span id="anTodoS">Spesso sono quelli che sembrano meccanici</span></div><button class="btn" data-act="select-linear" data-tip="Seleziona nella timeline i keyframe lineari, per sistemarli con una curva">Selezionali</button></div>
         <div class="secs" id="anWrap">
-          <details class="sec" data-sec="an-stats" open>
-            <summary>Panoramica</summary>
-            <div class="sec-body"><div class="stats" id="anStats"></div></div>
-          </details>
           <details class="sec" data-sec="an-peaks" open>
-            <summary>Momenti più intensi</summary>
+            <summary>Momenti più intensi <span class="secn">clic per andarci</span></summary>
             <div class="sec-body"><div class="list" id="anPeaks"></div></div>
           </details>
           <details class="sec" data-sec="an-layers" open>
-            <summary>Layer più animati</summary>
+            <summary>Layer più animati <span class="secn">clic per selezionarli</span></summary>
             <div class="sec-body"><div class="list" id="anLayers"></div></div>
           </details>
           <details class="sec" data-sec="an-ease" open>
-            <summary>Easing</summary>
+            <summary>Easing <span class="secn" id="anEaseN"></span></summary>
             <div class="sec-body">
               <div id="anEase"></div>
-              <div class="btnrow"><button class="btn" data-act="select-linear" data-tip="Seleziona nella timeline i keyframe lineari, per sistemarli con una curva">Seleziona i lineari</button></div>
             </div>
           </details>
         </div>
@@ -434,13 +418,18 @@
       <section class="view view-team" data-view="team">
         <div class="vhead">
           <div class="vhead-txt"><strong class="vtitle" id="tmName">Team</strong><span class="vsub" id="tmFolder"></span></div>
-          <button class="btn sm" data-act="tm-folder" data-tip="Scegli la cartella condivisa (Drive, Dropbox, server) dove il team tiene la libreria">Cartella…</button>
-          <button class="ibtn" data-act="tm-menu" aria-label="Altro" data-tip="Altre azioni"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+          <button class="ibtn" data-act="tm-menu" aria-label="Altro" data-tip="Cartella condivisa, rinomina, esporta e importa"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></button>
+        </div>
+        <div class="vwell tmsetup" id="tmSetup" hidden>
+          <div class="tmsw" aria-hidden="true"><i style="background:#0B1F4B"></i><i style="background:#1E5BC6"></i><i style="background:#45A3E5"></i><i style="background:#F2EFE8"></i><i style="background:#E8A35A"></i></div>
+          <strong>Condividi la libreria con il team</strong>
+          <p>Scegli una cartella che vedono tutti, su Drive, Dropbox o sul server. Palette, curve, animazioni di testo e liste arrivano da sole su ogni computer.</p>
+          <div class="tmsetupbtns"><button class="btn primary" data-act="tm-folder">Scegli la cartella</button><button class="btn ghost" data-act="tm-later">Per ora solo qui</button></div>
         </div>
         <div class="secs" id="tmWrap">
-          <details class="sec" data-sec="tm-colors" open><summary>Palette <span class="secn" id="tmNColors"></span></summary><div class="sec-body" id="tmColors"></div></details>
+          <details class="sec" data-sec="tm-colors" open><summary>Palette <span class="secn" id="tmNColors"></span><span class="grow"></span><button class="btn sm ghost addbtn" data-act="tm-palette" data-tip="Crea una palette con i colori del cliente"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg>Palette</button></summary><div class="sec-body" id="tmColors"></div></details>
           <details class="sec" data-sec="tm-text" open><summary>Animazioni di testo <span class="secn" id="tmNText"></span></summary><div class="sec-body" id="tmText"></div></details>
-          <details class="sec" data-sec="tm-curves" open><summary>Curve <span class="secn" id="tmNCurves"></span></summary><div class="sec-body" id="tmCurves"></div></details>
+          <details class="sec" data-sec="tm-curves" open><summary>Curve <span class="secn" id="tmNCurves"></span><span class="grow"></span><button class="btn sm ghost addbtn" data-act="tm-lib" data-tip="Le curve del team sono anche nella Libreria">Apri in Libreria</button></summary><div class="sec-body" id="tmCurves"></div></details>
           <details class="sec" data-sec="tm-lists" open><summary>Liste <span class="secn" id="tmNLists"></span></summary><div class="sec-body" id="tmLists"></div></details>
         </div>
       </section>

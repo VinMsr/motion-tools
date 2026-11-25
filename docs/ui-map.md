@@ -128,33 +128,43 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 
 | Elemento | Stato | Collegamento |
 |---|---|---|
-| Intestazione con i layer e il riferimento | C | `#alSel`, `#alSub` in `applyState()` |
-| Alla composizione, Alla selezione | C | `#alignTarget` |
-| Striscia: allinea, centra, distribuisci | C | `[data-align]`, `[data-dist]` |
-| Muovi come un blocco, Gruppi, Crea gruppo | C | `#alignGroup`, `#groupList`, `group-new` |
-| Punto di ancoraggio, Guide | C | `#anchorGrid`, `#gBody` |
+| Intestazione con i layer e la comp | C | `#alSel`, `#alSub` in `applyState()`, nomi da `selNames` |
+| Anteprima della comp con i layer | C | `#alSvg`, `alRead()` su `inflect_layoutRead` (solo lettura), `alDraw()` |
+| Dove andranno i layer, al passaggio del mouse o con il fuoco | C | `alTargets()`: stessi conti di `inflect_align` e `inflect_distribute`. Didascalia `#alCap` |
+| Alla comp, Alla selezione, Come blocco | C | `#alignTarget`, `#alignGroup` (interruttore) |
+| Striscia: allinea, centra, distribuisci | C | `[data-align]`, `[data-dist]`. Distribuisci spento sotto i tre layer |
+| Punto di ancoraggio | C | `#anchorGrid`, `inflect_anchor` |
+| Gruppi con conteggio, Salva la selezione | C | `#groupList`, `#groupN`, `group-new` |
+| Guide | C | `#gBody` |
 
 ## Utility
 
 | Elemento | Stato | Collegamento |
 |---|---|---|
 | Intestazione con i layer | C | `#utSel`, `#utSub` |
-| Sezioni (cartelle, composizione, righello, copia, sposta, sfalsa, liste) | C | Come prima, stesso ordine |
+| Righello nel pozzetto, didascalia | C | `#rulerSvg`, `#rulerCap`, `refreshRuler()`, `drawRuler()` |
+| Spazio X e Y scrivibili | C | `#rulerData`, `inflect_setGap` |
+| Animazione: Copia e incolla, Sposta, Sfalsa | C | Schede `#utTabs` (`mt.utTab`), `#cpBody`, `#ofBody`, `#stBody` |
+| Composizione, Liste, Cartelle del progetto | C | `precomp-fit`, `comp-fit`, `#liBody`, `consolida` |
 
 ## Analisi
 
 | Elemento | Stato | Collegamento |
 |---|---|---|
-| Comp, durata, keyframe, Aggiorna | C | `#anComp`, `#anMeta`, `analyze` |
-| Ritmo nel pozzetto in alto | C | `#anSvg`, `drawChart()`, clic = `seek()` |
-| Panoramica in tre colonne, momenti, layer, easing | C | `renderAnalysis()` |
+| Comp, durata, ora della lettura, Aggiorna | C | `#anComp`, `#anMeta`, `analyze` |
+| Ritmo nel pozzetto | C | `#anSvg`, `drawChart()`, clic = `seek()` |
+| Tre numeri | C | `#anStats` |
+| Riquadro dei passaggi lineari, Selezionali | C | `#anTodo`, `select-linear` |
+| Momenti, layer, easing | C | `renderAnalysis()` |
 
 ## Team
 
 | Elemento | Stato | Collegamento |
 |---|---|---|
-| Nome, cartella, Cartella…, Altro | C | `#tmName`, `#tmFolder`, `tm-folder`, `tm-menu` |
-| Conteggi delle sezioni | C | `#tmNColors`, `#tmNText`, `#tmNCurves`, `#tmNLists` |
+| Nome, cartella con lo stato, Altro | C | `#tmName`, `#tmFolder` (pallino verde, grigio solo qui, arancio irraggiungibile), `tm-menu` |
+| Prima volta: Scegli la cartella, Per ora solo qui | C | `#tmSetup`, `tm-folder`, `tm-later` (`mt.teamLater`) |
+| Palette a strisce, clic su un colore | C | `.tmpal`, `applyColor()`, `tm-palette` |
+| Animazioni di testo, curve, liste | C | Si aprono in Testo, Curve, Utility. Sezioni vuote con l'azione per crearle |
 
 ## Accessibilità, da rispettare nella beta (WCAG 2.1 AA, più la 2.5.8 della 2.2)
 
