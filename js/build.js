@@ -1,2 +1,2 @@
 // Generato da tools/build.js
-window.MT_BUILD = "2.37.0-60e2b5d7";
+window.MT_BUILD = "2.38.0-44c1ae67";

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ExtensionManifest Version="7.0" ExtensionBundleId="tools.inflect.panel" ExtensionBundleVersion="2.37.0" ExtensionBundleName="Motion Tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="7.0" ExtensionBundleId="tools.inflect.panel" ExtensionBundleVersion="2.38.0" ExtensionBundleName="Motion Tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ExtensionList>
-    <Extension Id="tools.inflect.panel.main" Version="2.37.0"/>
+    <Extension Id="tools.inflect.panel.main" Version="2.38.0"/>
   </ExtensionList>
   <ExecutionEnvironment>
     <HostList>

@@ -1,3 +1,12 @@
+Motion Tools 2.38.0
+- Team, nuova sezione File master: i progetti .aep del NAS che importate spesso, come le matrici dei LED o le preview.
+  - "+ Master" apre una finestra: scegli il file con Sfoglia, il nome si compila da solo, poi aggiungi una descrizione se serve. L'elenco lo vedono tutti i colleghi;
+  - un clic sul master lo apre, Importa (o il doppio clic) lo porta nel progetto. Puoi importarlo quante volte vuoi: ogni volta comp nuove, tutte tue, in una cartella che puoi rinominare;
+  - accanto a ogni master c'è quante volte è già nel progetto aperto, anche dopo che hai rinominato la cartella;
+  - con "Riusa i video e le immagini già nel progetto" i file sorgente identici restano uno solo. Le comp non si uniscono mai;
+  - se accanto al .aep c'è un PNG con lo stesso nome, diventa l'anteprima;
+  - se il NAS non è collegato o il file è stato spostato, la riga lo dice e puoi ricollegarlo.
+
 Motion Tools 2.37.0
 - Allinea:
   - "Alla comp" o "Alla selezione" e l'interruttore Come blocco stanno subito sopra gli strumenti, che sono su un'unica striscia;
