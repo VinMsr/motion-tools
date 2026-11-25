@@ -907,56 +907,6 @@
     ], ev);
   }
 
-  function brandMenu(anchor) {
-    const sh = S.shared || { libraries: [] };
-    const items = [];
-    if (sh.libraries.length > 1) {
-      sh.libraries.forEach((l) => items.push({
-        label: (l.file === sh.active ? '✓ ' : '  ') + `${l.name} (${l.count})`,
-        run: async () => { await call('inflect_sharedSetActive', l.file); await loadShared(); toast(`Libreria attiva: ${l.name}.`, 'brand'); },
-      }));
-      items.push('-');
-    }
-    items.push({ label: 'Nuova libreria…', run: () => openSheet('Nuova libreria brand', [
-      { key: 'name', label: 'Nome del brand o del cliente', value: '', placeholder: 'Es. Inter, Barilla, Studio' },
-    ], 'Crea', async (v) => {
-      const r = await call('inflect_sharedCreate', v.name || 'Brand');
-      if (!r.ok) return toast(r.error, 'err');
-      await loadShared();
-      toast(`${v.name || 'Brand'} creata.`, 'brand');
-    }) });
-    items.push({ label: 'Rinomina libreria', run: () => openSheet('Libreria brand', [
-      { key: 'name', label: 'Nome del brand', value: S.brand.name },
-      { key: 'owner', label: 'Responsabile', value: S.brand.owner || '', placeholder: 'Chi approva le modifiche' },
-    ], 'Salva', async (v) => {
-      await mutate('brand', (L) => { L.name = v.name || 'Brand'; L.owner = v.owner; });
-      await loadShared();
-    }) });
-    const toggleLock = async (L) => { L.locked = !L.locked; };
-    toggleLock.allowLocked = true;
-    items.push({ label: S.brand.locked ? 'Sblocca modifiche' : 'Blocca modifiche', run: async () => {
-      if (await mutate('brand', toggleLock)) toast(S.brand.locked ? 'Libreria bloccata per tutto il team.' : 'Libreria sbloccata.', 'brand');
-    } });
-    items.push('-');
-    items.push({ label: sh.isDefault ? 'Usa una cartella condivisa…' : 'Cambia cartella condivisa…', run: async () => {
-      const r = await call('inflect_sharedChooseFolder');
-      if (!r.ok) return toast(r.error, 'err');
-      if (r.cancelled) return;
-      await loadShared();
-      toast(`Ora le curve brand si leggono da ${S.shared.folderName}.`, 'brand');
-    } });
-    if (!sh.isDefault) items.push({ label: 'Torna alla cartella del plugin', run: async () => { await call('inflect_sharedResetFolder'); await loadShared(); } });
-    items.push({ label: 'Mostra la cartella', run: () => call('inflect_revealShared') });
-    items.push('-');
-    items.push({ label: 'Copia tutte nel progetto', run: async () => {
-      const all = S.brand.curves.map(C.clone);
-      if (await mutate('project', (L) => all.forEach((c) => upsert(L, c)))) toast(`${all.length} curve copiate nel progetto.`);
-    } });
-    items.push({ label: 'Esporta file…', run: () => exportLib('brand') });
-    items.push({ label: 'Importa file…', run: () => importInto('brand') });
-    openMenu(anchor, items);
-  }
-
   function simpleMenu(anchor, lib) {
     const items = [
       { label: 'Esporta file…', run: () => exportLib(lib) },
@@ -2254,8 +2204,9 @@
     svg.innerHTML = pts.map((p, i) => {
       const x = (W / 2 + (p[0] - cx) * k), y = (H / 2 + (p[1] - cy) * k);
       const s = srcs > 1 ? (N.pick === 'random' ? Math.floor(rnd(i) * srcs) : i % srcs) : 0;
-      return s === 1 ? `<circle class="s1" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${sz / 2}"/>`
-        : `<rect class="s${s}" x="${(x - sz / 2).toFixed(1)}" y="${(y - sz / 2).toFixed(1)}" width="${sz}" height="${sz}" rx="${Math.max(1, sz / 4)}"/>`;
+      const cls = ['s0', 's1', 's2'][s];
+      return s === 1 ? `<circle class="${cls}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${sz / 2}"/>`
+        : `<rect class="${cls}" x="${(x - sz / 2).toFixed(1)}" y="${(y - sz / 2).toFixed(1)}" width="${sz}" height="${sz}" rx="${Math.max(1, sz / 4)}"/>`;
     }).join('');
     const tot = N.mode === 2 ? N.cols * N.rows * (N.threeD ? N.levels : 1) : N.count;
     const cap = $('#repNewCap');

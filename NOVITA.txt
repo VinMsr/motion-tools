@@ -1,3 +1,7 @@
+Motion Tools 2.36.1
+- Cloner: il titolo Distribuzione non resta più a metà pannello mentre scorri, con la grafica che gli passava sotto.
+- Codice più snello: il foglio di stile è più leggero di un settimo, senza regole vecchie che venivano sovrascritte. Tolte anche alcune parti di codice che nessuno usava più.
+
 Motion Tools 2.36.0
 - Tutte le schede seguono il nuovo disegno. In alto c'è sempre il nome di quello su cui lavori, con una riga che spiega la situazione. L'azione principale sta nella barra in basso.
 - Testo:
