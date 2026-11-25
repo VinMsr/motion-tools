@@ -185,6 +185,25 @@
       const hx = this.X(this.curve.points[i].t + h.x), hy = this.Y(this.curve.points[i].v + h.y);
       el('line', { x1: px, y1: py, x2: hx, y2: hy, class: 'stem' }, g);
       el('circle', { cx: hx, cy: hy, r: 4, class: 'knob', 'data-role': side, 'data-i': i }, g);
+      // Influenza come in After Effects: lunghezza orizzontale della maniglia sul tratto, in percentuale.
+      // L'etichetta sta dal lato opposto all'altro capo del tratto, cosi' non copre la curva.
+      const P = this.curve.points, p = P[i], o = side === 'ho' ? P[i + 1] : P[i - 1];
+      if (o) {
+        const span = Math.abs(o.t - p.t);
+        if (span > 1e-6) {
+          const pct = Math.round(Math.min(100, Math.abs(h.x) / span * 100));
+          const up = o.v < p.v; // l'altro capo sta sotto: etichetta sopra
+          const w = this.size.w;
+          const x = Math.max(14, Math.min(w - 14, hx));
+          const dragging = this.drag && this.drag.i === i && this.drag.role === side;
+          // Se dal lato preferito l'etichetta uscirebbe dal grafico, va dall'altro lato.
+          const H = this.size.h;
+          let y = up ? hy - 10 : hy + 18;
+          if (y < 12 || y > H - 4) y = up ? hy + 18 : hy - 10;
+          const t = el('text', { x, y, class: 'hpct' + (dragging ? ' on' : ''), 'text-anchor': 'middle' }, g);
+          t.textContent = `${pct}%`;
+        }
+      }
       // Area di presa pi\u00f9 grande del disegno, per non dover mirare al pixel.
       el('circle', { cx: hx, cy: hy, r: 9, class: 'grab', 'data-role': side, 'data-i': i }, g);
     }
