@@ -1,3 +1,18 @@
+Motion Tools 2.37.0
+- Allinea:
+  - "Alla comp" o "Alla selezione" e l'interruttore Come blocco stanno subito sopra gli strumenti, che sono su un'unica striscia;
+  - Distribuisci si spegne quando hai meno di tre layer;
+  - i gruppi sono pillole con il numero di layer, e "Salva la selezione" ne crea uno nuovo.
+- Utility:
+  - il righello è in alto e reagisce alla selezione. Lo spazio tra due layer si cambia scrivendo il numero;
+  - Copia e incolla, Sposta e Sfalsa sono tre schede della stessa sezione;
+  - Composizione, Liste e Cartelle del progetto partono chiuse.
+- Analisi: sotto il ritmo ci sono tre numeri (keyframe, layer animati, tempo fermo). Se ci sono passaggi lineari, un riquadro te lo dice e li seleziona con un clic.
+- Team:
+  - la prima volta un riquadro spiega come condividere la libreria e fa scegliere la cartella;
+  - le palette sono strisce di colore, e un clic su un colore lo mette sui layer selezionati;
+  - animazioni di testo, curve e liste sono elenchi che si aprono nella loro scheda. Ogni sezione vuota dice dove si crea quello che manca.
+
 Motion Tools 2.36.1
 - Curve: accanto a ogni maniglia c'è la sua influenza in percentuale, come in After Effects. Mentre trascini una maniglia, il suo numero si schiarisce.
 - Cloner: il titolo Distribuzione non resta più a metà pannello mentre scorri, con la grafica che gli passava sotto.

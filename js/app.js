@@ -1257,15 +1257,15 @@
   function renderAnalysis() {
     const r = AN, T = r.totals;
     $('#anComp').textContent = r.comp;
-    $('#anMeta').textContent = `${C.round(r.duration, 2)} s a ${Math.round(r.fps)} fps, ${T.keys} keyframe su ${T.animated} ${T.animated === 1 ? 'layer' : 'layer'}`;
+    const now = new Date();
+    $('#anMeta').textContent = `${C.round(r.duration, 2)} s a ${Math.round(r.fps)} fps, letta alle ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
     drawChart();
 
     const per = r.duration > 0 ? T.keys / r.duration : 0;
+    void per;
     const stats = [
       [T.keys, 'keyframe'],
-      [`${T.animated}/${T.layers}`, 'layer animati'],
-      [C.round(per, 1), 'keyframe al secondo'],
-      [T.expr, T.expr === 1 ? 'espressione' : 'espressioni'],
+      [`${T.animated} di ${T.layers}`, 'layer animati'],
       [`${Math.round(r.quiet * 100)}%`, 'tempo fermo'],
     ];
     const st = $('#anStats');
@@ -1301,7 +1301,11 @@
     });
 
     const E = r.easing, tot = Math.max(1, E.linear + E.easy + E.custom + E.hold);
-    const parts = [['Curve personalizzate', E.custom, 'var(--hot)'], ['Easy Ease', E.easy, '#8d939c'], ['Lineari', E.linear, '#5d636c'], ['Hold', E.hold, '#3f4247']];
+    // In evidenza la cosa da sistemare: i passaggi lineari, con il pulsante per selezionarli.
+    $('#anTodo').hidden = !E.linear;
+    $('#anTodoT').textContent = `${E.linear} ${E.linear === 1 ? 'passaggio lineare' : 'passaggi lineari'}`;
+    $('#anEaseN').textContent = `${E.linear + E.easy + E.custom + E.hold} passaggi`;
+    const parts = [['Curve personalizzate', E.custom, 'var(--accent)'], ['Easy Ease', E.easy, '#8d939c'], ['Lineari', E.linear, '#5d636c'], ['Hold', E.hold, '#3f4247']];
     const ea = $('#anEase');
     ea.textContent = '';
     const bar = h('div', { class: 'easebar' });
@@ -1310,7 +1314,7 @@
     const lg = h('div', { class: 'legend' });
     parts.forEach(([l, n, col]) => { const i = h('i'); i.style.background = col; add(lg, i, h('span', { text: l }), h('span', { text: String(n) })); });
     add(ea, lg);
-    if (E.linear) add(ea, h('p', { class: 'hint', text: `${E.linear} ${E.linear === 1 ? 'passaggio è lineare' : 'passaggi sono lineari'}: spesso sono quelli che sembrano meccanici.` }));
+
   }
 
   async function selectLinear() {
@@ -1568,13 +1572,15 @@
     if (cv === 'notes') { try { ntHead(); } catch (e) {} }
     if (cv === 'align' || cv === 'utility') {
       const n = st.layers || 0, names = st.selNames || [];
-      const who = !n ? '' : n === 1 ? (names[0] || '1 layer') : n === 2 && names.length === 2 ? `${names[0]} e ${names[1]}` : `${n} layer selezionati`;
+      const who = !n ? '' : n === 1 ? (names[0] || '1 layer') : n === 2 && names.length === 2 ? `${names[0]} e ${names[1]}`
+        : n === 3 && names.length === 3 ? `${names[0]}, ${names[1]} e ${names[2]}` : names.length >= 2 ? `${names[0]}, ${names[1]} e altri ${n - 2}` : `${n} layer`;
       if (cv === 'align') {
-        $('#alSel').textContent = n ? who : 'Seleziona uno o più layer';
-        $('#alSub').textContent = alignTarget === 'comp' ? `Rispetto alla composizione${st.comp ? ` ${st.comp}` : ''}` : 'Rispetto ai layer selezionati';
+        $$('[data-dist]').forEach((b) => { b.disabled = n < 3; b.dataset.tip = n < 3 ? 'Servono almeno tre layer' : (b.dataset.dist === 'h' ? 'Stessa distanza orizzontale tra i centri' : 'Stessa distanza verticale tra i centri'); });
+        $('#alSel').textContent = n ? who : 'Allinea';
+        $('#alSub').textContent = !st.comp ? 'Apri una composizione' : n ? `${n === 1 ? '1 layer selezionato' : `${n} layer selezionati`} in ${st.comp}` : `${st.comp}, nessun layer selezionato`;
       } else {
         $('#utSel').textContent = n ? who : 'Utility';
-        $('#utSub').textContent = n === 2 ? 'Misure tra i due layer, composizione, copia e incolla' : n === 1 ? 'Misure dai bordi, composizione, copia e incolla' : 'Seleziona uno o due layer per le misure';
+        $('#utSub').textContent = n >= 2 ? 'Misure in questo fotogramma' : n === 1 ? 'Distanze dai bordi della comp' : 'Seleziona uno o due layer per le misure';
       }
     }
     if (cv === 'repeat' && !$('#repCreate').hidden) { try { $('#repNewSub').textContent = selLabel(); drawNewPreview(); } catch (e) {} }
@@ -1761,9 +1767,12 @@
     groupsKey = key;
     const box = $('#groupList');
     box.textContent = '';
-    if (!r.groups.length) { box.append(h('span', { class: 'faint', text: 'Nessuno' })); return; }
+    const gn = $('#groupN'); if (gn) gn.textContent = r.groups.length ? String(r.groups.length) : '';
+    const hint = $('#groupHint');
+    if (hint) hint.textContent = r.groups.length ? 'Un clic riseleziona il gruppo, Maiusc lo aggiunge. Con Come blocco si allinea tutto insieme.' : 'Seleziona dei layer e premi Salva la selezione: un clic li riseleziona tutti.';
+    if (!r.groups.length) return;
     r.groups.forEach((g) => {
-      const b = h('button', { class: 'gchip', text: `${g.name} (${g.count})`, 'data-tip': 'Clic per selezionarlo, Maiusc per aggiungerlo alla selezione, tasto destro per scioglierlo' });
+      const b = h('button', { class: 'gchip', 'data-tip': 'Clic per selezionarlo, Maiusc per aggiungerlo alla selezione, tasto destro per scioglierlo' }, g.name, h('span', { class: 'segn', text: String(g.count) }));
       b.addEventListener('click', async (e) => { const res = await call('inflect_groupSelect', g.name, e.shiftKey); if (!res.ok) toast(res.error, 'err'); poll(true); });
       b.addEventListener('contextmenu', (e) => { e.preventDefault(); openMenu(b, [{ label: `Sciogli ${g.name}`, danger: true, run: async () => { await call('inflect_groupRemove', g.name); groupsKey = ''; groupsRead(true); toast(`Gruppo ${g.name} sciolto. I layer restano dove sono.`); } }], e); });
       box.append(b);
@@ -1803,6 +1812,20 @@
     poll(true);
   }
 
+  /* Utility: Copia e incolla, Sposta e Sfalsa sono tre schede della stessa sezione. */
+  (function utTabs() {
+    let cur = 'cp';
+    try { cur = localStorage.getItem('mt.utTab') || 'cp'; } catch (e) {}
+    const set = (k) => {
+      cur = k;
+      $$('#utTabs button').forEach((b) => { const on = b.dataset.ut === k; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      $$('.utpane').forEach((p) => { p.hidden = p.dataset.pane !== k; });
+      try { localStorage.setItem('mt.utTab', k); } catch (e) {}
+    };
+    $$('#utTabs button').forEach((b) => b.addEventListener('click', () => set(b.dataset.ut)));
+    set(cur);
+  })();
+
   /* ============================================================ righello == */
 
   const px = (n) => String(C.round(n, 1));
@@ -1812,7 +1835,15 @@
     rulerBusy = true;
     const m = await call('inflect_measure');
     rulerBusy = false;
-    if (!m.ok || !m.count) return;
+    if (!m.ok || !m.count) {
+      if (rulerKey === 'none') return;
+      rulerKey = 'none';
+      $('#rulerSvg').innerHTML = ''; $('#rulerData').textContent = '';
+      $('#rulerCap').textContent = 'Seleziona uno o due layer nella comp';
+      $('.rulerwell').classList.add('is-empty');
+      return;
+    }
+    $('.rulerwell').classList.remove('is-empty');
     const key = JSON.stringify(m);
     if (key === rulerKey) return;
     rulerKey = key;
@@ -1821,7 +1852,7 @@
 
   function drawRuler(m) {
     const svg = $('#rulerSvg');
-    const W = svg.getBoundingClientRect().width || 400, H = 190, pad = 16;
+    const W = svg.getBoundingClientRect().width || 316, H = svg.getBoundingClientRect().height || 156, pad = 16, padB = 28;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     const two = !!m.b;
     // Vista: tutta la composizione con un layer, l'area dei due layer con due.
@@ -1831,8 +1862,8 @@
     } else {
       v = { l: Math.min(0, m.a.l), t: Math.min(0, m.a.t), r: Math.max(m.comp.w, m.a.r), b: Math.max(m.comp.h, m.a.b) };
     }
-    const k = Math.min((W - pad * 2) / Math.max(1, v.r - v.l), (H - pad * 2) / Math.max(1, v.b - v.t));
-    const ox = (W - (v.r - v.l) * k) / 2, oy = (H - (v.b - v.t) * k) / 2;
+    const k = Math.min((W - pad * 2) / Math.max(1, v.r - v.l), (H - pad - padB) / Math.max(1, v.b - v.t));
+    const ox = (W - (v.r - v.l) * k) / 2, oy = pad + (H - pad - padB - (v.b - v.t) * k) / 2;
     const X = (x) => ox + (x - v.l) * k, Y = (y) => oy + (y - v.t) * k;
     const box = (b, cls) => `<rect class="rbox ${cls}" x="${X(b.l)}" y="${Y(b.t)}" width="${Math.max(1, (b.r - b.l) * k)}" height="${Math.max(1, (b.b - b.t) * k)}" rx="2"/>`;
     const tag = (x, y, txt) => { const w = txt.length * 6.2 + 10; return `<rect class="rtag" x="${x - w / 2}" y="${y - 8}" width="${w}" height="16" rx="3"/><text class="rtagtext" x="${x}" y="${y}">${txt}</text>`; };
@@ -1883,19 +1914,14 @@
       w.append(inp, document.createTextNode(val < 0 ? 'px, sovrapposti' : 'px'));
       return w;
     };
+    $('#rulerCap').textContent = two ? (m.count > 2 ? 'Misuro i primi due layer selezionati' : `${m.a.name} resta fermo, ${m.b.name} si sposta`) : `${m.a.name}, ${px(m.a.r - m.a.l)} \u00d7 ${px(m.a.b - m.a.t)} px`;
     if (two) {
-      row('Spazio orizzontale', gapInput('x', m.gapX));
-      row('Spazio verticale', gapInput('y', m.gapY));
-      row('Tra i centri', `${px(m.dist)} px  (X ${px(m.dx)}, Y ${px(m.dy)})`);
-      row(m.a.name, `${px(m.a.r - m.a.l)} \u00d7 ${px(m.a.b - m.a.t)} px`);
-      row(m.b.name, `${px(m.b.r - m.b.l)} \u00d7 ${px(m.b.b - m.b.t)} px`);
+      row('Spazio X', gapInput('x', m.gapX));
+      row('Spazio Y', gapInput('y', m.gapY));
       const n = document.createElement('span'); n.className = 'note';
-      n.textContent = m.count > 2 ? 'Misuro i primi due layer selezionati.' : 'Il primo layer selezionato resta fermo, il secondo si sposta.';
+      n.textContent = `Tra i centri ${px(m.dist)} px. ${m.a.name} ${px(m.a.r - m.a.l)} \u00d7 ${px(m.a.b - m.a.t)}, ${m.b.name} ${px(m.b.r - m.b.l)} \u00d7 ${px(m.b.b - m.b.t)} px`;
       data.appendChild(n);
     } else {
-      row('Dimensioni', `${px(m.a.r - m.a.l)} \u00d7 ${px(m.a.b - m.a.t)} px`);
-      row('Da sinistra / destra', `${px(m.a.l)} / ${px(m.comp.w - m.a.r)} px`);
-      row('Dall\u2019alto / dal basso', `${px(m.a.t)} / ${px(m.comp.h - m.a.b)} px`);
     }
   }
 
@@ -3098,16 +3124,32 @@
     if (!$('#tmColors')) return;
     const T = TEAM || teamNorm({});
     $('#tmName').textContent = T.name || 'Team';
-    $('#tmFolder').textContent = teamInfo ? (teamInfo.isDefault ? 'Solo su questo computer, scegli una cartella condivisa' : `Cartella ${teamInfo.folderName}`) : 'Libreria condivisa con il team';
     $('#tmFolder').dataset.tip = teamInfo ? teamInfo.folder : '';
     const tn = (id, n) => { const el = $(id); if (el) el.textContent = n ? String(n) : ''; };
     tn('#tmNColors', (T.palettes || []).length); tn('#tmNText', (T.text || []).length); tn('#tmNCurves', (T.curves || []).length); tn('#tmNLists', (T.lists || []).length);
 
+    // Prima volta: la libreria e' solo su questo computer, si propone la cartella condivisa.
+    let later = false;
+    try { later = localStorage.getItem('mt.teamLater') === '1'; } catch (e) {}
+    $('#tmSetup').hidden = !(teamInfo && teamInfo.isDefault) || later;
+    const fold = $('#tmFolder');
+    fold.textContent = '';
+    if (teamInfo) {
+      fold.append(h('span', { class: 'tmdot' + (teamInfo.isDefault ? ' local' : teamOffline ? ' off' : '') }), teamInfo.isDefault ? 'Solo su questo computer' : teamOffline ? `${teamInfo.folderName} non raggiungibile` : teamInfo.folderName);
+    } else fold.textContent = 'Libreria condivisa con il team';
+    const empty = (box, text, label, run) => {
+      const b = h('button', { class: 'btn sm ghost', text: label });
+      b.addEventListener('click', run);
+      add(box, h('div', { class: 'tmempty' }, h('span', { text }), b));
+    };
+
+    $$('[data-act="tm-palette"]').forEach((x) => { x.hidden = !T.palettes.length; });
+    $$('[data-act="tm-lib"]').forEach((x) => { x.hidden = !T.curves.length; });
     const pc = $('#tmColors');
     pc.textContent = '';
-    if (!T.palettes.length) add(pc, h('p', { class: 'hint', text: 'Nessuna palette. Creane una con i colori del cliente: un clic su un colore lo applica ai layer selezionati.' }));
+    if (!T.palettes.length) empty(pc, 'I colori del cliente, a un clic', 'Nuova palette', () => paletteSheet(null));
     T.palettes.forEach((p) => {
-      const more = h('button', { class: 'ibtn sm', 'data-tip': 'Altre azioni' });
+      const more = h('button', { class: 'ibtn sm', 'aria-label': `Opzioni di ${p.name}`, 'data-tip': 'Altre azioni' });
       more.innerHTML = '<svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg>';
       more.addEventListener('click', () => openMenu(more, [
         { label: 'Applica in ordine ai layer selezionati', run: async () => { const r = await call('inflect_listApply', { kind: 'color', values: p.colors, mode: 'cycle' }); if (!r.ok) return toast(r.error, 'err'); toast(`${p.name} distribuita su ${r.count} layer.`); } },
@@ -3117,35 +3159,49 @@
         { label: 'Modifica', run: () => paletteSheet(p) },
         { label: 'Elimina', danger: true, run: () => mutateTeam((T2) => { T2.palettes = T2.palettes.filter((x) => x.id !== p.id); }) },
       ]));
-      add(pc, h('div', { class: 'palrow' }, h('div', { class: 'palhead' }, h('span', { class: 'palname', text: p.name }), h('span', { class: 'grow' }), more),
-        chips(p.colors, applyColor, (c) => `${c}: clic per applicarlo ai layer selezionati`)));
+      const strip = h('div', { class: 'tmstrip' });
+      const codes = h('div', { class: 'tmcodes' });
+      p.colors.forEach((c) => {
+        const sw = h('button', { class: 'tmswatch', 'aria-label': `Applica ${c} ai layer selezionati`, 'data-tip': `${c}: clic per applicarlo ai layer selezionati` });
+        sw.style.background = c;
+        sw.addEventListener('click', () => applyColor(c));
+        strip.append(sw); codes.append(h('span', { text: c.replace('#', '') }));
+      });
+      add(pc, h('div', { class: 'tmpal' }, h('div', { class: 'tmpalhead' }, h('span', { class: 'tmpalname', text: p.name }), h('span', { class: 'faint', text: `${p.colors.length} ${p.colors.length === 1 ? 'colore' : 'colori'}` }), more), strip, codes));
     });
-    const np = h('button', { class: 'btn sm', text: 'Nuova palette' });
-    np.addEventListener('click', () => paletteSheet(null));
-    add(pc, h('div', { class: 'btnrow' }, np));
+    if (T.palettes.length) add(pc, h('p', { class: 'hint', text: 'Un clic su un colore lo mette sui layer selezionati.' }));
 
     const tx = $('#tmText');
+    TX.players = TX.players.filter((pl) => !tx.contains(pl.box));
     tx.textContent = '';
-    if (!T.text.length) add(tx, h('p', { class: 'hint', text: 'Nessuna animazione. Dalla scheda Testo usa Salva nel team.' }));
+    if (!T.text.length) empty(tx, 'Dalla scheda Testo, Salva nel team', 'Apri Testo', () => showView('text'));
     T.text.forEach((p) => {
-      const open = h('button', { class: 'li', 'data-tip': 'Apri nella scheda Testo' }, h('span', { class: 'tc', text: TX_UNIT_LABEL[p.unit] || '' }), h('span', { text: p.name }), h('span'));
-      open.addEventListener('click', () => { txLoad(C.clone ? JSON.parse(JSON.stringify(p)) : p, 'team'); showView('text'); });
+      const prev = h('div', { class: 'txprev' });
+      const open = h('button', { class: 'txcard', 'data-tip': 'Apri nella scheda Testo' }, prev, h('span', { class: 'txname', text: p.name }), h('span', { class: 'faint', text: TX_UNIT_LABEL[p.unit] || '' }));
+      open.addEventListener('click', () => { txLoad(JSON.parse(JSON.stringify(p)), 'team'); showView('text'); });
       open.addEventListener('contextmenu', (e) => { e.preventDefault(); openMenu(open, [{ label: 'Elimina', danger: true, run: () => mutateTeam((T2) => { T2.text = T2.text.filter((x) => x.id !== p.id); }) }], e); });
       add(tx, open);
+      requestAnimationFrame(() => { const pl = txPlayer(prev, p, TX_SAMPLE, 11); pl.card = true; pl.hot = false; pl.draw(pl.start + Math.max(0.05, pl.inLen * 0.45) * 1000); });
     });
 
     const cv = $('#tmCurves');
     cv.textContent = '';
-    add(cv, h('p', { class: 'hint', text: T.curves.length ? `${T.curves.length} ${T.curves.length === 1 ? 'curva' : 'curve'} del team: le trovi nella libreria della scheda Curve, sezione Team.` : 'Nessuna curva. Nella scheda Curve, dal menu di una curva, scegli Copia nel team.' }));
-    const go = h('button', { class: 'btn sm', text: 'Apri le curve' });
-    go.addEventListener('click', () => showView('curve'));
-    add(cv, h('div', { class: 'btnrow' }, go));
+    if (!T.curves.length) empty(cv, 'Dalla Libreria, Copia nel team', 'Apri Libreria', () => showView(isNarrow() ? 'library' : 'curve'));
+    T.curves.slice(0, 6).forEach((c) => {
+      const it = h('button', { class: 'tmcurve', 'data-tip': 'Apri nella scheda Curve' });
+      it.append(thumb(c, 32, 20));
+      const cb = C.toCubic(c);
+      it.append(h('span', { class: 'nm', text: c.name }), h('span', { class: 'meta', text: cb ? cb.map((v) => fmtN(v)).join(' ') : `${c.points.length} punti` }));
+      it.addEventListener('click', () => { setCurve(c, { lib: 'brand', id: c.id }); showView('curve'); });
+      add(cv, it);
+    });
+    if (T.curves.length > 6) add(cv, h('p', { class: 'hint', text: `Altre ${T.curves.length - 6} nella Libreria.` }));
 
     const ls = $('#tmLists');
     ls.textContent = '';
-    if (!T.lists.length) add(ls, h('p', { class: 'hint', text: 'Nessuna lista. In Utility, sezione Liste, usa Salva nel team.' }));
+    if (!T.lists.length) empty(ls, 'Da Utility, sezione Liste', 'Apri Utility', () => showView('utility'));
     T.lists.forEach((l) => {
-      const b = h('button', { class: 'li', 'data-tip': 'Apri in Utility' }, h('span', { class: 'tc', text: { color: 'Colori', number: 'Numeri', text: 'Testi' }[l.kind] || '' }), h('span', { text: `${l.name} (${l.values.length})` }), h('span'));
+      const b = h('button', { class: 'tmlist', 'data-tip': 'Apri in Utility' }, h('span', { class: 'nm', text: l.name }), h('span', { class: 'faint', text: `${{ color: 'Colori', number: 'Numeri', text: 'Testi' }[l.kind] || ''}, ${l.values.length} ${l.values.length === 1 ? 'voce' : 'voci'}` }));
       b.addEventListener('click', () => { LI.kind = l.kind; LI.text[l.kind] = l.kind === 'text' ? l.values.join('\n') : l.values.join(', '); saveLI(); renderListsUI(); showView('utility'); });
       b.addEventListener('contextmenu', (e) => { e.preventDefault(); openMenu(b, [{ label: 'Elimina', danger: true, run: () => mutateTeam((T2) => { T2.lists = T2.lists.filter((x) => x.id !== l.id); }) }], e); });
       add(ls, b);
@@ -4669,6 +4725,9 @@
       case 'tx-remove': txRemove(); break;
       case 'tx-import': txImport(); break;
       case 'tm-menu': teamMenu(b); break;
+      case 'tm-later': try { localStorage.setItem('mt.teamLater', '1'); } catch (e) {} $('#tmSetup').hidden = true; toast('La libreria resta su questo computer. La cartella condivisa la scegli dal menu con i tre puntini.'); break;
+      case 'tm-palette': e.preventDefault(); paletteSheet(null); break;
+      case 'tm-lib': e.preventDefault(); showView(isNarrow() ? 'library' : 'curve'); break;
       case 'tm-folder': call('inflect_teamChoose').then((r) => { if (r.ok && !r.cancelled) { loadTeam(); toast(`Libreria di team in ${r.folderName}.`); } else if (!r.ok) toast(r.error, 'err'); }); break;
       default: break;
     }

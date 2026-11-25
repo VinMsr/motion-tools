@@ -1165,3 +1165,91 @@ details[open] > .sec-body { animation: mtIn .16s cubic-bezier(.2,0,0,1); }
 /* Influenza accanto alle maniglie, come nel mockup */
 .graph .hpct { fill: var(--faint); font-size: 11px; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; }
 .graph .hpct.on { fill: var(--strong); }
+
+/* --- 2.37 · Allinea, Utility, Analisi, Team come nel canvas ---------------- */
+/* Allinea */
+.alctl { padding-top: 0; }
+.alrow { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.alrow .seg { flex: 1 1 auto; display: flex; min-width: 0; }
+.alrow .seg button { flex: 1; }
+.alblock { flex: none; height: 24px; align-items: center; cursor: pointer; padding: 0; }
+.alblock input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.alblock:has(input:checked) { color: var(--strong); }
+.alblock input:checked + .switch { background: var(--accent); }
+.alblock input:checked + .switch::after { background: var(--on-accent); transform: translateX(12px); }
+.alblock input:focus-visible + .switch { outline: 2px solid var(--accent); outline-offset: 2px; }
+.view-align .tools { margin: 8px 0 0; }
+.view-align .tools .tbtn:disabled { opacity: .35; pointer-events: none; }
+.view-align .tools .tbtn:hover, .view-align .tools .tbtn:focus-visible { background: var(--raised); color: var(--strong); }
+.app.no-layers .view-align .needs-sel { opacity: .45; pointer-events: none; }
+.alanchor { display: flex; align-items: center; gap: 16px; }
+.alanchor .anchorgrid { width: 88px; height: 60px; flex: none; margin: 4px 0; }
+.alanchor .hint { margin: 0; }
+.groups { display: flex; flex-wrap: wrap; gap: 4px; }
+.gchip { height: 24px; display: inline-flex; align-items: center; gap: 2px; padding: 0 10px; border: 0; border-radius: 12px; background: transparent; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); color: var(--strong); cursor: pointer; font: inherit; }
+.gchip:hover { background: var(--raised); box-shadow: inset 0 0 0 1px var(--accent); }
+#groupHint { margin: 8px 0 0; }
+/* Utility */
+.rulerwell { height: 156px; }
+.rulerwell .ruler { height: 100%; background: transparent; margin: 0; border-radius: 0; }
+.rulerwell .ruler svg { display: block; width: 100%; height: 100%; }
+.rulerwell.is-empty .wellcap { color: var(--muted); }
+.rulerdata { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 8px; row-gap: 4px; align-items: center; padding: 8px 12px 0 16px; flex: none; }
+.rulerdata:empty { display: none; }
+.rulerdata .k { color: var(--muted); }
+.rulerdata .v input { width: 6ch; }
+.rulerdata .note { grid-column: 1 / -1; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.uttabs { display: flex; margin-bottom: 8px; }
+.uttabs button { flex: 1; }
+.utpane[hidden] { display: none; }
+.utpane > .subhead:first-child { display: none; }
+/* Analisi */
+.anstats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px 12px 0; flex: none; }
+.anstats .stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.anstats .stat b { font-size: 16px; line-height: 20px; font-weight: 500; color: var(--strong); font-variant-numeric: tabular-nums; }
+.anstats .stat span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.antodo { flex: none; display: flex; align-items: center; gap: 8px; margin: 12px 12px 0; padding: 8px 8px 8px 12px; border-radius: 8px; background: var(--raised); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.antodo[hidden] { display: none; }
+.antodo-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.antodo-txt strong { font-weight: 500; color: var(--strong); }
+.antodo-txt span { color: var(--muted); }
+/* Team */
+.tmdot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #6fbf8f; margin-right: 6px; vertical-align: 1px; }
+.tmdot.local { background: var(--faint); }
+.tmdot.off { background: #e0a050; }
+.tmsetup { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.tmsetup[hidden] { display: none; }
+.tmsetup strong { font-size: 13px; line-height: 16px; font-weight: 500; color: var(--strong); }
+.tmsetup p { margin: 0; color: var(--muted); line-height: 16px; }
+.tmsw { display: flex; gap: 4px; margin-bottom: 8px; }
+.tmsw i { width: 24px; height: 24px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.tmsetupbtns { display: flex; gap: 4px; margin-top: 8px; }
+.tmempty { display: flex; align-items: center; gap: 8px; min-height: 28px; color: var(--muted); }
+.tmempty span { flex: 1; min-width: 0; }
+.tmpal { padding: 8px; border-radius: 8px; background: var(--well); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); margin-bottom: 4px; }
+.tmpalhead { display: flex; align-items: center; gap: 8px; min-height: 20px; }
+.tmpalname { flex: 1; min-width: 0; font-weight: 500; color: var(--strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tmstrip { display: flex; gap: 2px; height: 32px; margin-top: 8px; border-radius: 4px; overflow: hidden; }
+.tmswatch { flex: 1; min-width: 0; border: 0; padding: 0; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); transition: transform .08s cubic-bezier(.2,0,0,1); }
+.tmswatch:hover { box-shadow: inset 0 0 0 2px var(--strong); }
+.tmswatch:active { transform: scale(.96); }
+.tmswatch:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tmcodes { display: flex; gap: 2px; margin-top: 4px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.tmcodes span { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; font-size: 10px; }
+#tmText .txcard { width: 100%; }
+#tmText .txcard .faint { margin-left: auto; }
+.tmcurve, .tmlist { width: 100%; height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 4px; border: 0; border-radius: 6px; background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.tmcurve:hover, .tmlist:hover { background: var(--hover); }
+.tmcurve .nm, .tmlist .nm { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tmcurve .meta { color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.view-align .tools { overflow: hidden; }
+.view-align .tools .vsep { margin: 0 1px; }
+.view-align .tools .tbtn svg { width: 18px; height: 18px; flex: none; }
+.alrow .seg { flex-wrap: nowrap; }
+@media (max-width: 300px) {
+  .alrow { flex-wrap: wrap; row-gap: 8px; }
+  .alrow .seg { flex: 1 1 100%; }
+  .view-align .tools { gap: 0; padding: 2px 0; }
+  .view-align .tools .vsep { margin: 0; }
+  .view-align .tools .tbtn svg { width: 16px; height: 16px; }
+}
