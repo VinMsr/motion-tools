@@ -160,6 +160,10 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 | Elemento | Stato | Collegamento |
 |---|---|---|
 | Nome, cartella con lo stato, Altro | C | `#tmName`, `#tmFolder` (pallino verde, grigio solo qui, arancio irraggiungibile), `tm-menu` |
+| File master: elenco, + Master | C | `#tmMasters`, `renderMasters()`, `tm-master-add`, dati in `TEAM.masters` ({id, name, desc, path, reuse}) |
+| Riga aperta: Importa, Mostra nel Finder, Modifica, Togli | C | `masterImport()` su `inflect_masterImport`, `inflect_masterReveal`, `masterSheet()` |
+| Quante volte nel progetto, data, anteprima PNG, non trovato | C | `inflect_masterCounts` (commento `MT_MASTER=id` sulla cartella), `inflect_masterStat` |
+| Nuovo master: File con Sfoglia, Nome, Descrizione, Riusa i file | C | `masterSheet()`, `inflect_masterPick` |
 | Prima volta: Scegli la cartella, Per ora solo qui | C | `#tmSetup`, `tm-folder`, `tm-later` (`mt.teamLater`) |
 | Palette a strisce, clic su un colore | C | `.tmpal`, `applyColor()`, `tm-palette` |
 | Animazioni di testo, curve, liste | C | Si aprono in Testo, Curve, Utility. Sezioni vuote con l'azione per crearle |

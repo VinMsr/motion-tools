@@ -1339,7 +1339,7 @@
     if (name === 'utility') { rulerKey = ''; refreshRuler(); }
     if (name === 'repeat') { repShown = null; if (S.ae) renderRepeatState(S.ae.repeat); poll(true); }
     if (name === 'text') { txLastSel = ''; txPoll(true); txGallery(); txKick(); }
-    if (name === 'team') { renderTeam(); }
+    if (name === 'team') { renderTeam(); masterRefresh(true); }
     if (name === 'notes') { renderNoteNew(); NT.key = ''; notesRead(true); SY.key = ''; syncRead(true); if (S.ae && S.ae.comp && (!AN || anComp !== S.ae.comp)) analyze(); else requestAnimationFrame(() => drawNoteRhythm()); }
     if (name === 'align') { gRead(true); groupsKey = ''; groupsRead(true); }
     if (name === 'audit') { if (S.ae && S.ae.comp && (!AN || anComp !== S.ae.comp)) analyze(); else requestAnimationFrame(() => drawChart()); }
@@ -3036,7 +3036,7 @@
   const teamNorm = (T) => {
     T = T && typeof T === 'object' ? T : {};
     T.format = 'motion-tools-team'; T.version = 1; T.name = T.name || 'Team';
-    ['curves', 'text', 'palettes', 'lists'].forEach((k) => { if (!Array.isArray(T[k])) T[k] = []; });
+    ['curves', 'text', 'palettes', 'lists', 'masters'].forEach((k) => { if (!Array.isArray(T[k])) T[k] = []; });
     const L = C.validateLibrary({ curves: T.curves });
     T.curves = L ? L.curves : [];
     return T;
@@ -3059,6 +3059,7 @@
     S.shared = { folder: r.folder, folderName: r.folderName, isDefault: r.isDefault };
     teamToBrand();
     renderLibrary(); renderTeam(); txGallery();
+    if (currentView() === 'team') masterRefresh(true);
   }
   async function mutateTeam(fn) {
     if (teamOffline || !(await reachable(teamPath()))) { teamOffline = true; toast('La cartella del team non risponde: riprova quando il NAS \u00e8 raggiungibile.', 'err'); return false; }
@@ -3145,6 +3146,8 @@
 
     $$('[data-act="tm-palette"]').forEach((x) => { x.hidden = !T.palettes.length; });
     $$('[data-act="tm-lib"]').forEach((x) => { x.hidden = !T.curves.length; });
+    renderMasters(T);
+
     const pc = $('#tmColors');
     pc.textContent = '';
     if (!T.palettes.length) empty(pc, 'I colori del cliente, a un clic', 'Nuova palette', () => paletteSheet(null));
@@ -3207,6 +3210,171 @@
       add(ls, b);
     });
   }
+
+  /* --------------------------------------------------- file master -- */
+  // Progetti .aep del NAS che si importano nel progetto aperto, anche piu' volte.
+  const MS = { open: null, busy: null, stat: {}, counts: {}, key: '' };
+  const relDay = (ms) => {
+    if (!ms) return '';
+    const d = Math.floor((Date.now() - ms) / 86400000);
+    if (d <= 0) return 'oggi'; if (d === 1) return 'ieri'; if (d < 30) return `${d} giorni fa`;
+    return 'il ' + new Date(ms).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+  };
+  async function masterRefresh(force) {
+    const list = (TEAM && TEAM.masters) || [];
+    const [st, ct] = await Promise.all([
+      list.length ? call('inflect_masterStat', list.map((m) => m.path)) : Promise.resolve({ ok: true, list: [] }),
+      call('inflect_masterCounts'),
+    ]);
+    if (st.ok) { MS.stat = {}; st.list.forEach((x) => { MS.stat[x.path] = x; }); }
+    if (ct.ok) MS.counts = ct.counts || {};
+    const key = JSON.stringify([MS.stat, MS.counts, list]);
+    if (!force && key === MS.key) return;
+    MS.key = key;
+    if (TEAM) renderMasters(TEAM);
+  }
+  function masterThumb(m) {
+    const st = MS.stat[m.path] || {};
+    const box = h('span', { class: 'msthumb', 'aria-hidden': 'true' });
+    const icon = () => { box.innerHTML = '<svg viewBox="0 0 24 24"><rect x="7" y="3" width="14" height="10" rx="1.5"/><rect x="3" y="11" width="10" height="10" rx="1.5"/><path d="M15 17h6v-2"/></svg>'; };
+    if (st.png) {
+      const img = h('img', { alt: '' });
+      img.onerror = icon;
+      img.src = 'file://' + encodeURI(st.png) + '?t=' + (st.modified || 0);
+      box.append(img);
+    } else icon();
+    return box;
+  }
+  function renderMasters(T) {
+    const box = $('#tmMasters');
+    if (!box) return;
+    box.textContent = '';
+    const list = T.masters || [];
+    const n = $('#tmNMasters'); if (n) n.textContent = list.length ? String(list.length) : '';
+    $$('[data-act="tm-master-add"]').forEach((x) => { x.hidden = !list.length; });
+    if (!list.length) {
+      const b = h('button', { class: 'btn sm ghost', text: 'Aggiungi un master' });
+      b.addEventListener('click', () => masterSheet(null));
+      add(box, h('div', { class: 'tmempty' }, h('span', { text: 'I progetti .aep del NAS, da importare con un clic' }), b));
+      return;
+    }
+    list.forEach((m) => {
+      const st = MS.stat[m.path] || {};
+      const known = m.path in MS.stat;
+      const missing = known && !st.exists;
+      const count = MS.counts[m.id] || 0;
+      const open = MS.open === m.id, busy = MS.busy === m.id;
+      const meta = missing ? h('span', { class: 'mswarn', text: 'Non trovato sul NAS' }) : h('span', { text: st.modified ? `Aggiornato ${relDay(st.modified)}` : '' });
+      const right = busy ? h('span', { class: 'msbusy', text: 'Importo…' }) : count ? h('span', { class: 'mscount', text: count === 1 ? '1 volta' : `${count} volte`, 'data-tip': 'Quante volte è già nel progetto aperto' }) : null;
+      const head = h('button', { class: 'mshead', 'aria-expanded': open ? 'true' : 'false' }, masterThumb(m), h('span', { class: 'mstxt' }, h('span', { class: 'msname', text: m.name }), meta), right);
+      head.addEventListener('click', () => { MS.open = open ? null : m.id; renderMasters(T); });
+      head.addEventListener('dblclick', (e) => { e.preventDefault(); if (!missing) masterImport(m); });
+      const row = h('div', { class: 'msrow' + (open ? ' is-open' : '') + (missing ? ' is-missing' : '') }, head);
+      if (open) {
+        const more = h('button', { class: 'ibtn sm', 'aria-label': `Opzioni di ${m.name}`, 'data-tip': 'Modifica, togli dall’elenco' });
+        more.innerHTML = '<svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg>';
+        more.addEventListener('click', () => openMenu(more, [
+          { label: 'Modifica…', run: () => masterSheet(m) },
+          '-',
+          { label: 'Togli dall’elenco', danger: true, run: () => mutateTeam((T2) => { T2.masters = (T2.masters || []).filter((x) => x.id !== m.id); }).then((ok) => ok && toast(`${m.name} tolto dall’elenco. Il file sul NAS resta dov’è.`)) },
+        ]));
+        const note = missing ? 'Il file non è più dove era. Se il NAS è collegato, scegli dove si trova adesso.' : (m.desc || '');
+        const acts = h('div', { class: 'msacts' });
+        if (missing) {
+          const re = h('button', { class: 'btn primary sm', text: 'Ricollega' });
+          re.addEventListener('click', async () => {
+            const r = await call('inflect_masterPick', m.path);
+            if (!r.ok) return toast(r.error, 'err');
+            if (r.cancelled) return;
+            if (await mutateTeam((T2) => { const x = (T2.masters || []).find((y) => y.id === m.id); if (x) x.path = r.path; })) { toast(`${m.name} ricollegato.`); masterRefresh(true); }
+          });
+          acts.append(re);
+        } else {
+          const imp = h('button', { class: 'btn primary sm', text: 'Importa', 'data-tip': 'Importa il master nel progetto aperto (anche doppio clic sulla riga)' });
+          imp.disabled = busy;
+          imp.addEventListener('click', () => masterImport(m));
+          const fin = h('button', { class: 'btn ghost sm', text: 'Mostra nel Finder' });
+          fin.addEventListener('click', async () => { const r = await call('inflect_masterReveal', m.path); if (!r.ok) toast(r.error, 'err'); });
+          acts.append(imp, fin);
+        }
+        acts.append(h('span', { class: 'grow' }), more);
+        const sub = [];
+        if (note) sub.push(h('p', { class: 'msnote', text: note }));
+        if (!missing) sub.push(h('p', { class: 'msnote faint', text: count ? `Già nel progetto ${count === 1 ? '1 volta' : `${count} volte`}` : 'Non ancora nel progetto' }));
+        row.append(...sub, acts);
+      }
+      add(box, row);
+    });
+  }
+  async function masterImport(m) {
+    if (MS.busy) return;
+    MS.busy = m.id; renderMasters(TEAM);
+    toast(`${m.name}: importo il progetto…`);
+    const r = await call('inflect_masterImport', m.path, m.id, m.reuse !== false);
+    MS.busy = null;
+    if (!r.ok) { renderMasters(TEAM); return toast(r.error, 'err'); }
+    toast(`${m.name} importato nella cartella ${r.name}.${r.reused ? ` ${r.reused} ${r.reused === 1 ? 'file sorgente era' : 'file sorgente erano'} già nel progetto e li ho riusati.` : ''}`);
+    masterRefresh(true);
+  }
+  // Finestra Nuovo master: prima il file, poi il nome (preso dal file), la descrizione e il riuso dei file.
+  function masterSheet(m) {
+    const M = m ? { ...m } : { id: C.uid(), name: '', desc: '', path: '', reuse: true };
+    const wrap = $('#modal');
+    wrap.innerHTML = '';
+    const f = h('form', { class: 'sheet mssheet' });
+    const title = h('h3', { text: m ? 'Modifica master' : 'Nuovo master' });
+    const pathTxt = h('span', { class: 'mspath', text: M.path ? M.path.split('/').pop() : 'Nessun file scelto' });
+    const dirTxt = h('span', { class: 'hint', text: M.path ? M.path.replace(/\/[^/]*$/, '') : '' });
+    const prevTxt = h('span', { class: 'hint' });
+    const pick = h('button', { type: 'button', class: 'btn', text: 'Sfoglia…' });
+    const name = h('input', { type: 'text', value: M.name, placeholder: 'Es. Matrici LED bordo campo' });
+    const desc = h('textarea', { rows: 2, placeholder: 'Cosa contiene, per cosa si usa' }); desc.value = M.desc || '';
+    const reuse = h('input', { type: 'checkbox' }); reuse.checked = M.reuse !== false;
+    const showPrev = async () => {
+      prevTxt.textContent = '';
+      if (!M.path) return;
+      const r = await call('inflect_masterStat', [M.path]);
+      const x = r.ok && r.list[0];
+      prevTxt.textContent = x && x.png ? `Anteprima: ${x.png.split('/').pop()}, trovata accanto al file` : 'Per l’anteprima, metti accanto al file un PNG con lo stesso nome';
+    };
+    pick.addEventListener('click', async () => {
+      const r = await call('inflect_masterPick', M.path);
+      if (!r.ok) return toast(r.error, 'err');
+      if (r.cancelled) return;
+      M.path = r.path;
+      pathTxt.textContent = r.path.split('/').pop();
+      dirTxt.textContent = r.path.replace(/\/[^/]*$/, '');
+      if (!name.value.trim()) name.value = r.name.replace(/\.aepx?$/i, '').replace(/[_-]+/g, ' ').replace(/\s*v\d+$/i, '').trim();
+      showPrev();
+    });
+    const lab = (t, extra) => h('span', { class: 'mslab' }, t, extra ? h('span', { class: 'faint', text: extra }) : null);
+    const act = h('div', { class: 'actions' });
+    const cancel = h('button', { type: 'button', class: 'btn ghost', text: 'Annulla' });
+    cancel.addEventListener('click', closeSheet);
+    act.append(cancel, h('button', { type: 'submit', class: 'btn primary', text: m ? 'Salva' : 'Aggiungi' }));
+    f.append(title,
+      h('div', { class: 'msfield' }, lab('File'), h('div', { class: 'msfile' }, pathTxt, pick), dirTxt, prevTxt),
+      h('label', { class: 'msfield' }, lab('Nome'), name),
+      h('label', { class: 'msfield' }, lab('Descrizione', 'facoltativa'), desc),
+      h('label', { class: 'check' }, reuse, h('span', { text: 'Riusa i video e le immagini già nel progetto' })),
+      act);
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!M.path) return toast('Scegli il file .aep con Sfoglia.', 'err');
+      M.name = name.value.trim() || M.path.split('/').pop().replace(/\.aepx?$/i, '');
+      M.desc = desc.value.trim(); M.reuse = reuse.checked;
+      closeSheet();
+      if (await mutateTeam((T2) => { T2.masters = T2.masters || []; const i = T2.masters.findIndex((x) => x.id === M.id); if (i >= 0) T2.masters[i] = M; else T2.masters.push(M); })) {
+        toast(m ? `${M.name} aggiornato.` : `${M.name} aggiunto ai file master del team.`);
+        MS.open = M.id; masterRefresh(true);
+      }
+    });
+    wrap.append(f); wrap.hidden = false;
+    showPrev();
+    setTimeout(() => (M.path ? name : pick).focus(), 0);
+  }
+  // Tornando al pannello si rileggono date e conteggi: magari hai rinominato o cancellato una cartella.
+  window.addEventListener('focus', () => { if (currentView() === 'team') masterRefresh(false); });
 
   /* --------------------------------------------------- aggiornamenti -- */
 
@@ -4727,6 +4895,7 @@
       case 'tm-menu': teamMenu(b); break;
       case 'tm-later': try { localStorage.setItem('mt.teamLater', '1'); } catch (e) {} $('#tmSetup').hidden = true; toast('La libreria resta su questo computer. La cartella condivisa la scegli dal menu con i tre puntini.'); break;
       case 'tm-palette': e.preventDefault(); paletteSheet(null); break;
+      case 'tm-master-add': e.preventDefault(); masterSheet(null); break;
       case 'tm-lib': e.preventDefault(); showView(isNarrow() ? 'library' : 'curve'); break;
       case 'tm-folder': call('inflect_teamChoose').then((r) => { if (r.ok && !r.cancelled) { loadTeam(); toast(`Libreria di team in ${r.folderName}.`); } else if (!r.ok) toast(r.error, 'err'); }); break;
       default: break;

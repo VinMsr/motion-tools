@@ -1253,3 +1253,36 @@ details[open] > .sec-body { animation: mtIn .16s cubic-bezier(.2,0,0,1); }
   .view-align .tools .vsep { margin: 0; }
   .view-align .tools .tbtn svg { width: 16px; height: 16px; }
 }
+
+/* --- 2.38 · file master del team ------------------------------------------ */
+.msrow { border-radius: 8px; margin: 0 -8px 2px; }
+.msrow.is-open { background: var(--raised); box-shadow: inset 0 0 0 1px var(--accent); padding-bottom: 8px; margin-top: 4px; margin-bottom: 4px; }
+.mshead { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.msrow:not(.is-open) .mshead:hover { background: var(--hover); }
+.mshead:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.msthumb { width: 72px; height: 40px; flex: none; border-radius: 6px; background: var(--well); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--faint); }
+.msthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.msthumb svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
+.mstxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mstxt > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.mstxt .msname { color: var(--strong); font-weight: 500; }
+.mstxt .mswarn { color: #e0a050; }
+.mscount, .msbusy { flex: none; color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.msbusy { color: var(--muted); }
+.msnote { margin: 0 8px 4px 92px; color: var(--muted); line-height: 16px; }
+.msnote.faint { color: var(--faint); }
+.msacts { display: flex; align-items: center; gap: 4px; margin: 4px 8px 0 92px; }
+.msacts .grow { flex: 1; }
+.mssheet { display: flex; flex-direction: column; gap: 12px; }
+.msfield { display: flex; flex-direction: column; gap: 4px; }
+.mslab { display: flex; justify-content: space-between; color: var(--muted); }
+.msfile { display: flex; align-items: center; gap: 4px; }
+.mspath { flex: 1; min-width: 0; height: 24px; line-height: 24px; padding: 0 8px; border-radius: 6px; background: var(--well); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); color: var(--strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box; }
+.mssheet .hint { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mssheet input[type="text"], .mssheet textarea { width: 100%; box-sizing: border-box; }
+@media (max-width: 300px) { .msnote, .msacts { margin-left: 8px; } }
+.mssheet label.msfield { display: flex; flex-direction: column; gap: 4px; }
+.mssheet label.check { display: flex; grid-template-columns: none; align-items: center; gap: 8px; color: var(--text); }
+.mssheet label.check input { width: auto; }
+.mssheet textarea { height: 40px; resize: none; }
+.mslab { width: 100%; gap: 8px; }
