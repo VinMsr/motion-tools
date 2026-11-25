@@ -1,4 +1,5 @@
 Motion Tools 2.36.1
+- Curve: accanto a ogni maniglia c'è la sua influenza in percentuale, come in After Effects. Mentre trascini una maniglia, il suo numero si schiarisce.
 - Cloner: il titolo Distribuzione non resta più a metà pannello mentre scorri, con la grafica che gli passava sotto.
 - Codice più snello: il foglio di stile è più leggero di un settimo, senza regole vecchie che venivano sovrascritte. Tolte anche alcune parti di codice che nessuno usava più.
 

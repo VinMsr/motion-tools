@@ -1162,3 +1162,6 @@ details[open] > .sec-body { animation: mtIn .16s cubic-bezier(.2,0,0,1); }
 }
 .libsec > summary .ltitle { flex: 0 1 auto; }
 .libsec > summary .secn { margin-left: -4px; flex: 1 1 auto; }
+/* Influenza accanto alle maniglie, come nel mockup */
+.graph .hpct { fill: var(--faint); font-size: 11px; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; }
+.graph .hpct.on { fill: var(--strong); }
