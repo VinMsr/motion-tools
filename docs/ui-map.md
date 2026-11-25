@@ -129,10 +129,8 @@ Il testo bianco sull'azzurro si ferma a 2,63:1, quindi sul blu il testo è sempr
 | Elemento | Stato | Collegamento |
 |---|---|---|
 | Intestazione con i layer e la comp | C | `#alSel`, `#alSub` in `applyState()`, nomi da `selNames` |
-| Anteprima della comp con i layer | C | `#alSvg`, `alRead()` su `inflect_layoutRead` (solo lettura), `alDraw()` |
-| Dove andranno i layer, al passaggio del mouse o con il fuoco | C | `alTargets()`: stessi conti di `inflect_align` e `inflect_distribute`. Didascalia `#alCap` |
 | Alla comp, Alla selezione, Come blocco | C | `#alignTarget`, `#alignGroup` (interruttore) |
-| Striscia: allinea, centra, distribuisci | C | `[data-align]`, `[data-dist]`. Distribuisci spento sotto i tre layer |
+| Striscia: allinea, centra, distribuisci | C | `[data-align]`, `[data-dist]`. Distribuisci spento sotto i tre layer (`applyState()`) |
 | Punto di ancoraggio | C | `#anchorGrid`, `inflect_anchor` |
 | Gruppi con conteggio, Salva la selezione | C | `#groupList`, `#groupN`, `group-new` |
 | Guide | C | `#gBody` |

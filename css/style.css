@@ -1168,17 +1168,6 @@ details[open] > .sec-body { animation: mtIn .16s cubic-bezier(.2,0,0,1); }
 
 /* --- 2.37 · Allinea, Utility, Analisi, Team come nel canvas ---------------- */
 /* Allinea */
-.alwell { height: 196px; }
-.alwell svg { display: block; width: 100%; height: 100%; }
-.alwell .alcomp { fill: #19191c; stroke: rgba(255,255,255,.14); }
-.alwell .almid { stroke: rgba(255,255,255,.05); fill: none; }
-.alwell .allayer { fill: rgba(236,236,239,.1); stroke: rgba(236,236,239,.5); }
-.alwell .alname { fill: var(--muted); font-size: 10px; }
-.alwell .alghost { fill: rgba(74,163,255,.12); stroke: var(--accent); stroke-width: 1.2; }
-.alwell .alpath { stroke: var(--accent); stroke-dasharray: 2 2; opacity: .7; fill: none; }
-.alwell .alsel { fill: none; stroke: var(--muted); stroke-dasharray: 3 3; }
-.alwell .alnone { fill: none; stroke: rgba(236,236,239,.3); stroke-dasharray: 3 3; }
-.alwell .wellcap { color: var(--muted); }
 .alctl { padding-top: 0; }
 .alrow { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .alrow .seg { flex: 1 1 auto; display: flex; min-width: 0; }
@@ -1264,12 +1253,3 @@ details[open] > .sec-body { animation: mtIn .16s cubic-bezier(.2,0,0,1); }
   .view-align .tools .vsep { margin: 0; }
   .view-align .tools .tbtn svg { width: 16px; height: 16px; }
 }
-.alwell .alnow { fill: none; stroke: rgba(236,236,239,.35); stroke-dasharray: 3 3; }
-.alwell .alghost { fill: rgba(74,163,255,.18); }
-.alwell .alname.on { fill: var(--strong); }
-.alwell .wellcap { display: flex; align-items: center; gap: 12px; white-space: nowrap; overflow: hidden; }
-.alwell .alact { color: var(--strong); }
-.alkey { display: inline-flex; align-items: center; gap: 4px; }
-.alkey i { width: 10px; height: 8px; border-radius: 2px; box-sizing: border-box; }
-.alkey .know { border: 1px dashed rgba(236,236,239,.5); }
-.alkey .kafter { background: rgba(74,163,255,.3); border: 1px solid var(--accent); }

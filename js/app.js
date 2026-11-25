@@ -86,7 +86,6 @@
           : { ok: true, version: '2.0.0', project: 'Campagna_Q1.aep', comp: 'Hero', props: 2, pairs: 2, keys: 4, duration: 0.6, fps: 25, layers: 2, sig: 'a', tails: this.tails, repeat: this.rp ? { name: this.rp.name, index: 1, mode: this.rp.params['Distribuzione'], count: this.rp.clones, threeD: this.rp.threeD } : null };
         case 'inflect_tailUpdate': this.tails = args[2] ? 0 : this.tails; return { ok: true, added: this.tails, removed: 2, tails: this.tails, notes: [] };
         case 'inflect_anchor': case 'inflect_align': case 'inflect_distribute': return { ok: true, layers: 2, notes: [] };
-        case 'inflect_layoutRead': return { ok: true, comp: { name: 'Hero', w: 1920, h: 1080 }, layers: [{ name: 'Titolo', l: 520, t: 220, r: 1400, b: 370 }, { name: 'Logo', l: 300, t: 470, r: 720, b: 660 }, { name: 'Pallino', l: 760, t: 720, r: 1000, b: 960 }], total: 3 };
         case 'inflect_measure': return { ok: true, count: 2, comp: { w: 1920, h: 1080 }, a: { name: 'Logo', l: 300, r: 700, t: 300, b: 620 }, b: { name: 'Titolo', l: 860, r: 1500, t: 420, b: 560 }, gapX: 160, gapY: -140, dx: 680, dy: 30, dist: 680.66 };
         case 'inflect_setGap': return { ok: true, moved: 'Titolo' };
         case 'inflect_repeatCreate': {
@@ -1342,7 +1341,7 @@
     if (name === 'text') { txLastSel = ''; txPoll(true); txGallery(); txKick(); }
     if (name === 'team') { renderTeam(); }
     if (name === 'notes') { renderNoteNew(); NT.key = ''; notesRead(true); SY.key = ''; syncRead(true); if (S.ae && S.ae.comp && (!AN || anComp !== S.ae.comp)) analyze(); else requestAnimationFrame(() => drawNoteRhythm()); }
-    if (name === 'align') { gRead(true); groupsKey = ''; groupsRead(true); AL.key = ''; alRead(true); }
+    if (name === 'align') { gRead(true); groupsKey = ''; groupsRead(true); }
     if (name === 'audit') { if (S.ae && S.ae.comp && (!AN || anComp !== S.ae.comp)) analyze(); else requestAnimationFrame(() => drawChart()); }
     if (S.ae) applyState(S.ae);
     showGroup(name);
@@ -1576,6 +1575,7 @@
       const who = !n ? '' : n === 1 ? (names[0] || '1 layer') : n === 2 && names.length === 2 ? `${names[0]} e ${names[1]}`
         : n === 3 && names.length === 3 ? `${names[0]}, ${names[1]} e ${names[2]}` : names.length >= 2 ? `${names[0]}, ${names[1]} e altri ${n - 2}` : `${n} layer`;
       if (cv === 'align') {
+        $$('[data-dist]').forEach((b) => { b.disabled = n < 3; b.dataset.tip = n < 3 ? 'Servono almeno tre layer' : (b.dataset.dist === 'h' ? 'Stessa distanza orizzontale tra i centri' : 'Stessa distanza verticale tra i centri'); });
         $('#alSel').textContent = n ? who : 'Allinea';
         $('#alSub').textContent = !st.comp ? 'Apri una composizione' : n ? `${n === 1 ? '1 layer selezionato' : `${n} layer selezionati`} in ${st.comp}` : `${st.comp}, nessun layer selezionato`;
       } else {
@@ -1756,103 +1756,6 @@
   }));
   try { $('#alignGroup').checked = localStorage.getItem('mt.alignGroup') === '1'; } catch (e) {}
   $('#alignGroup').addEventListener('change', (e) => { try { localStorage.setItem('mt.alignGroup', e.target.checked ? '1' : '0'); } catch (e2) {} });
-
-  /* anteprima: la comp in piccolo con i layer selezionati; al passaggio su un pulsante, dove andranno */
-  const AL = { comp: null, layers: [], key: '', hover: null };
-  async function alRead(force) {
-    const r = await call('inflect_layoutRead');
-    if (!r.ok) return;
-    const key = JSON.stringify(r);
-    if (!force && key === AL.key) return;
-    AL.key = key; AL.comp = r.comp; AL.layers = r.layers || []; AL.total = r.total || 0;
-    const n = AL.layers.length;
-    $$('[data-dist]').forEach((b) => { b.disabled = n < 3; b.dataset.tip = n < 3 ? 'Servono almeno tre layer' : (b.dataset.dist === 'h' ? 'Stessa distanza orizzontale tra i centri' : 'Stessa distanza verticale tra i centri'); });
-    alDraw();
-  }
-  // Dove vanno i layer: stessi conti di inflect_align e inflect_distribute, solo per disegnarli.
-  function alTargets(act) {
-    const L = AL.layers, C2 = AL.comp;
-    if (!L.length || !C2) return null;
-    const blk = $('#alignGroup').checked;
-    const U = { l: Math.min(...L.map((b) => b.l)), t: Math.min(...L.map((b) => b.t)), r: Math.max(...L.map((b) => b.r)), b: Math.max(...L.map((b) => b.b)) };
-    const ref = act === 'center' || alignTarget === 'comp' ? { l: 0, t: 0, r: C2.w, b: C2.h } : U;
-    const shift = (b, edge) => {
-      const cx = (b.l + b.r) / 2, cy = (b.t + b.b) / 2;
-      switch (edge) {
-        case 'left': return [ref.l - b.l, 0];
-        case 'right': return [ref.r - b.r, 0];
-        case 'hcenter': return [(ref.l + ref.r) / 2 - cx, 0];
-        case 'top': return [0, ref.t - b.t];
-        case 'bottom': return [0, ref.b - b.b];
-        case 'vcenter': return [0, (ref.t + ref.b) / 2 - cy];
-        case 'center': return [(ref.l + ref.r) / 2 - cx, (ref.t + ref.b) / 2 - cy];
-      }
-      return [0, 0];
-    };
-    if (act === 'dh' || act === 'dv') {
-      if (L.length < 3) return null;
-      const hz = act === 'dh', c = (b) => hz ? (b.l + b.r) / 2 : (b.t + b.b) / 2;
-      const order = L.map((b, i) => [c(b), i]).sort((a, b) => a[0] - b[0]);
-      const a0 = order[0][0], a1 = order[order.length - 1][0], step = (a1 - a0) / (order.length - 1);
-      const out = L.map((b) => [0, 0]);
-      order.forEach(([v, i], k) => { const d = a0 + step * k - v; out[i] = hz ? [d, 0] : [0, d]; });
-      return out;
-    }
-    if (blk && (alignTarget === 'comp' || act === 'center')) { const d = shift(U, act); return L.map(() => d); }
-    if (alignTarget === 'selection' && act !== 'center' && blk) return null; // i gruppi salvati decidono i blocchi
-    return L.map((b) => shift(b, act));
-  }
-  function alDraw() {
-    const svg = $('#alSvg');
-    if (!svg) return;
-    const r = svg.getBoundingClientRect();
-    const W = Math.max(200, r.width || 316), H = Math.max(120, r.height || 196), padB = 32, pad = 12;
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    const C2 = AL.comp, L = AL.layers, cap = $('#alCap');
-    if (!C2) { svg.innerHTML = ''; cap.textContent = 'Apri una composizione'; return; }
-    const k = Math.min((W - pad * 2) / C2.w, (H - pad - padB) / C2.h);
-    const ox = (W - C2.w * k) / 2, oy = pad + (H - pad - padB - C2.h * k) / 2;
-    const X = (x) => ox + x * k, Y = (y) => oy + y * k;
-    let out = `<rect class="alcomp" x="${ox}" y="${oy}" width="${C2.w * k}" height="${C2.h * k}"/>`;
-    out += `<path class="almid" d="M${X(C2.w / 2)} ${oy}V${oy + C2.h * k}M${ox} ${Y(C2.h / 2)}H${ox + C2.w * k}"/>`;
-    if (!L.length) {
-      out += `<rect class="alnone" x="${X(C2.w * 0.4)}" y="${Y(C2.h * 0.35)}" width="${C2.w * 0.2 * k}" height="${C2.h * 0.3 * k}" rx="2"/>`;
-      svg.innerHTML = out; cap.innerHTML = 'Seleziona uno o più layer nella comp'; return;
-    }
-    const act = AL.hover, T = act ? alTargets(act) : null;
-    // Senza anteprima: i layer pieni con il nome. Con l'anteprima: tratteggiati dove sono ora, in azzurro dove andranno.
-    const name = (x, y, w, hh, n) => (w > 34 && hh > 14 ? `<text class="alname${T ? ' on' : ''}" x="${x + 4}" y="${y + 12}">${esc(n).slice(0, Math.floor(w / 6))}</text>` : '');
-    L.forEach((b, i) => {
-      const w = Math.max(2, (b.r - b.l) * k), hh = Math.max(2, (b.b - b.t) * k);
-      const [dx, dy] = T ? T[i] : [0, 0];
-      if (!T) { out += `<rect class="allayer" x="${X(b.l)}" y="${Y(b.t)}" width="${w}" height="${hh}" rx="2"/>` + name(X(b.l), Y(b.t), w, hh, b.name); return; }
-      out += `<rect class="alnow" x="${X(b.l)}" y="${Y(b.t)}" width="${w}" height="${hh}" rx="2"/>`;
-      out += `<rect class="alghost" x="${X(b.l + dx)}" y="${Y(b.t + dy)}" width="${w}" height="${hh}" rx="2"/>` + name(X(b.l + dx), Y(b.t + dy), w, hh, b.name);
-    });
-    if (T && alignTarget === 'selection' && act !== 'center' && !act.startsWith('d')) {
-      const U = { l: Math.min(...L.map((b) => b.l)), t: Math.min(...L.map((b) => b.t)), r: Math.max(...L.map((b) => b.r)), b: Math.max(...L.map((b) => b.b)) };
-      out += `<rect class="alsel" x="${X(U.l)}" y="${Y(U.t)}" width="${(U.r - U.l) * k}" height="${(U.b - U.t) * k}"/>`;
-    }
-    svg.innerHTML = out;
-    const label = AL_NAMES[act] || '';
-    if (!act) cap.textContent = L.length === 1 ? 'Passa sopra un pulsante per vedere dove va il layer' : 'Passa sopra un pulsante per vedere dove vanno i layer';
-    else if (!T) cap.textContent = `${label}: ogni gruppo salvato si muove come un blocco`;
-    else cap.innerHTML = `<span class="alact">${esc(label)}</span><span class="alkey"><i class="know"></i>ora</span><span class="alkey"><i class="kafter"></i>dopo il clic</span>`;
-  }
-  const AL_NAMES = { left: 'A sinistra', hcenter: 'Al centro in orizzontale', right: 'A destra', top: 'In alto', vcenter: 'Al centro in verticale', bottom: 'In basso', center: 'Al centro della comp', dh: 'Distribuisci in orizzontale', dv: 'Distribuisci in verticale' };
-  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  $$('[data-align],[data-dist]').forEach((b) => {
-    const act = b.dataset.align || (b.dataset.dist === 'h' ? 'dh' : 'dv');
-    if (!b.getAttribute('aria-label')) b.setAttribute('aria-label', b.dataset.tip || act);
-    const on = () => { AL.hover = act; alDraw(); }, off = () => { if (AL.hover === act) { AL.hover = null; alDraw(); } };
-    b.addEventListener('mouseenter', on); b.addEventListener('focus', on);
-    b.addEventListener('mouseleave', off); b.addEventListener('blur', off);
-    b.addEventListener('click', () => setTimeout(() => alRead(true), 250));
-  });
-  $('#alignGroup').addEventListener('change', () => alDraw());
-  $$('#alignTarget button').forEach((b) => b.addEventListener('click', () => alDraw()));
-  setInterval(() => { if (panelLive() && currentView() === 'align' && !AL.hover) alRead(false); }, 900);
-  try { new ResizeObserver(() => { if (currentView() === 'align') alDraw(); }).observe($('#alSvg')); } catch (e) {}
 
   /* gruppi salvati: layer che si riselezionano e si allineano insieme */
   let groupsKey = '';
